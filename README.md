@@ -1,94 +1,151 @@
-# 10x Astro Starter
+# 10x-knowtes
 
-A modern, opinionated starter template for building fast, accessible, and AI-friendly web applications.
+A web application for creating, organizing, and generating AI-powered summaries of notes to enhance learning efficiency.
+
+## Table of Contents
+
+- [Project Description](#project-description)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Available Scripts](#available-scripts)
+- [Project Scope](#project-scope)
+- [Project Status](#project-status)
+- [License](#license)
+
+## Project Description
+
+10x-knowtes is a web application that solves the problem of dispersed information across multiple notes by providing intelligent organization and AI-powered summaries. The application enables users to:
+
+- Create and organize notes in a hierarchical structure without nesting level limitations
+- Generate automatic summaries of topics using artificial intelligence
+- Create cross-references between related notes
+- Navigate through a clear and intuitive interface
+
+The application supports students, professionals, researchers, and hobbyists in effectively managing their notes from any field, making it easier to absorb knowledge and prepare for exams or certifications.
 
 ## Tech Stack
 
-- [Astro](https://astro.build/) v5.5.5 - Modern web framework for building fast, content-focused websites
-- [React](https://react.dev/) v19.0.0 - UI library for building interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
+### Frontend
+- [Astro 5](https://astro.build/)
+- [React 19](https://react.dev/)
+- [TypeScript 5](https://www.typescriptlang.org/)
+- [Tailwind CSS 4](https://tailwindcss.com/)
+- [Shadcn/UI](https://ui.shadcn.com/)
 
-## Prerequisites
+### Backend
+- [Supabase](https://supabase.com/)
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
+### AI Integration
+- [Openrouter.ai](https://openrouter.ai/)
+
+### CI/CD & Hosting
+- GitHub Actions
+- DigitalOcean
 
 ## Getting Started
 
-1. Clone the repository:
+### Prerequisites
 
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
-```
+- [Node.js](https://nodejs.org/) version 22.14.0
+- npm (comes with Node.js)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/w4rpnine/10x-knowtes.git
+   cd 10x-knowtes
+   ```
 
 2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-```bash
-npm install
-```
+3. Set up environment variables:
+   Create a `.env` file in the root directory with the following variables:
+   ```
+   # Supabase
+   PUBLIC_SUPABASE_URL=your_supabase_url
+   PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   
+   # OpenRouter
+   OPENROUTER_API_KEY=your_openrouter_api_key
+   ```
 
-3. Run the development server:
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-```bash
-npm run dev
-```
-
-4. Build for production:
-
-```bash
-npm run build
-```
+5. Open your browser and navigate to `http://localhost:3000`
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
+- `npm run dev` - Start the development server
+- `npm run build` - Build the production version of the app
+- `npm run preview` - Preview the built app before deployment
+- `npm run astro` - Run Astro CLI commands
+- `npm run lint` - Run ESLint to check code quality
+- `npm run lint:fix` - Run ESLint and automatically fix issues
+- `npm run format` - Format code using Prettier
 
-## Project Structure
+## Project Scope
 
-```md
-.
-├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   └── assets/     # Static assets
-├── public/         # Public assets
-```
+### MVP Features
 
-## AI Development Support
+- **Authentication System**
+  - User registration with email and password
+  - User login
+  - Secure data storage (encryption)
 
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
+- **Note Management**
+  - Create notes in markdown format
+  - Edit existing notes
+  - Delete notes
+  - Automatic saving during editing
 
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
+- **Hierarchical Organization**
+  - Multi-level grouping of notes into topics (nodes)
+  - Unlimited nesting structure
+  - Navigation through a tree panel and breadcrumb
 
-### Cursor IDE
+- **AI Summary Generation**
+  - Generate summaries of notes within a topic
+  - Accept or reject generated summaries
+  - Save accepted summaries as new notes
+  - Standard summary structure (key points, dates, summary, concept list)
 
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
+- **Reference System**
+  - Create references between notes
+  - Display references as hyperlinks to original notes
 
-### GitHub Copilot
+### Features Outside MVP Scope
 
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
+- Non-text notes
+- Markdown syntax formatting
+- References to note fragments
+- External sources import
+- Note sharing between users
+- Integration with other note-taking tools
+- Mindmap creation
+- Quiz generation
+- Summary enrichment with external information
+- Note enrichment suggestions
+- Keyword search
+- Theme customization
+- Mobile and desktop applications
+- Editing generated summaries
+- Note templates
+- Help system
+- Notifications (except UI info about summary generation)
 
-### Windsurf
+## Project Status
 
-The `.windsurfrules` file contains AI configuration for Windsurf.
+Current version: 0.0.1 (Early Development)
 
-## Contributing
-
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project.
+The project is currently in early development. Core features are being implemented and the application is not yet ready for production use.
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the LICENSE file for details.
