@@ -44,12 +44,6 @@
 - `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
 - UNIQUE (`source_note_id`, `target_note_id`)
 
-### note_views
-- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid()
-- `user_id` UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE
-- `note_id` UUID NOT NULL REFERENCES notes(id) ON DELETE CASCADE
-- `viewed_at` TIMESTAMPTZ NOT NULL DEFAULT now()
-
 ## Relationships
 
 1. **One-to-Many: User → Topics**
@@ -76,10 +70,6 @@
    - Each note can reference multiple other notes
    - Each note can be referenced by multiple other notes
 
-7. **One-to-Many: Note → Note Views**
-   - Each note can have multiple view records
-   - Each view record belongs to one note
-
 ## Indexes
 
 1. `topics_user_id_idx` ON `topics(user_id)`
@@ -90,9 +80,7 @@
 6. `summaries_topic_id_idx` ON `summaries(topic_id)`
 7. `references_source_note_id_idx` ON `references(source_note_id)`
 8. `references_target_note_id_idx` ON `references(target_note_id)`
-9. `note_views_note_id_idx` ON `note_views(note_id)`
-10. `note_views_user_id_idx` ON `note_views(user_id)`
-11. `notes_content_gin_idx` ON `notes(content)` USING gin (to_tsvector('english', content))
+9. `notes_content_gin_idx` ON `notes(content)` USING gin (to_tsvector('english', content))
 
 ## Row Level Security (RLS) Policies
 
@@ -128,13 +116,6 @@ CREATE POLICY summaries_isolation_policy ON summaries
 
 ```sql
 CREATE POLICY references_isolation_policy ON references
-    USING (user_id = auth.uid());
-```
-
-### note_views
-
-```sql
-CREATE POLICY note_views_isolation_policy ON note_views
     USING (user_id = auth.uid());
 ```
 
@@ -200,7 +181,6 @@ EXECUTE FUNCTION update_character_count();
    - This provides better security and facilitates future sharing functionality.
 
 6. **Metrics Tracking**:
-   - The note_views table tracks when users view notes for metrics purposes.
    - The notes_per_topic view provides quick access to the number of notes per topic.
 
 7. **References Implementation**:
