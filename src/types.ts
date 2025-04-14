@@ -15,6 +15,7 @@ export type SummaryStatDTO = SummaryStatEntity;
 export interface SummaryGenerationResponseDTO {
   summary_stat_id: string;
   topic_id: string;
+  note_id: string;
   status: "processing";
 }
 
