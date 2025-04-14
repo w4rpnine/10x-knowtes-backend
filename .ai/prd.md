@@ -14,14 +14,12 @@ Użytkownicy często spotykają się z następującymi problemami podczas nauki 
 
 1. Trudności w przyswajaniu wiedzy z wielu rozproszonych notatek dotyczących jednego tematu
 2. Brak efektywnego sposobu na podsumowanie najważniejszych informacji z wielu notatek jednocześnie
-3. Problemy z szybkim znalezieniem powiązań między różnymi notatkami
-4. Czasochłonność ręcznego tworzenia podsumowań do nauki
-5. Trudności w organizacji i kategoryzacji notatek w logiczne grupy tematyczne
+3. Czasochłonność ręcznego tworzenia podsumowań do nauki
+4. Trudności w organizacji i kategoryzacji notatek w logiczne grupy tematyczne
 
 10x-knowtes rozwiązuje te problemy, oferując:
 - Hierarchiczną strukturę organizacji notatek bez ograniczeń poziomów zagnieżdżenia
 - Automatyczne generowanie podsumowań z wykorzystaniem AI
-- System odnośników między notatkami
 - Przejrzysty interfejs do zarządzania notatkami i ich strukturą
 
 ## 3. Wymagania funkcjonalne
@@ -48,18 +46,13 @@ Użytkownicy często spotykają się z następującymi problemami podczas nauki 
 - Zapis zaakceptowanych podsumowań jako nowych notatek z odpowiednim tytułem i datą
 - Standardowa struktura podsumowań (punkty kluczowe, daty, podsumowanie, lista pojęć)
 
-### 3.5 System odnośników
-- Tworzenie odnośników między notatkami
-- Prezentacja odnośników jako hyperlinków do oryginalnych notatek
-- Odnośniki do całych notatek (nie do fragmentów)
-
 ## 4. Granice produktu
 
 W ramach MVP (Minimum Viable Product) nie będą implementowane następujące funkcjonalności:
 
 1. Notatki w innej formie niż tekstowa
 2. Formatowanie tekstu (nagłówki, kolory) na podstawie składni Markdown
-3. Odnośniki do fragmentów notatek (tylko do całych notatek)
+3. Odnośniki do notatek
 4. Import notatek z zewnętrznych źródeł (PDF, DOCX, md, itp.)
 5. Współdzielenie notatek między użytkownikami
 6. Integracje z innymi narzędziami do sporządzania notatek
@@ -184,18 +177,9 @@ Kryteria akceptacji:
 - System wyświetla tytuł i treść notatki w głównym obszarze interfejsu
 - Notatka jest wyświetlana w czytelnym formacie
 
-#### US-012: Tworzenie odnośników między notatkami
-Jako zalogowany użytkownik, chcę tworzyć odnośniki między notatkami, aby łączyć powiązane informacje.
-
-Kryteria akceptacji:
-- Użytkownik może utworzyć odnośnik do innej notatki podczas tworzenia lub edycji notatki
-- System wyświetla listę dostępnych notatek do wyboru
-- Utworzony odnośnik jest widoczny jako hyperlink w treści notatki
-- Kliknięcie w odnośnik przenosi użytkownika do powiązanej notatki
-
 ### Generowanie i zarządzanie podsumowaniami
 
-#### US-013: Generowanie podsumowania tematu
+#### US-012: Generowanie podsumowania tematu
 Jako zalogowany użytkownik, chcę generować podsumowania notatek z wybranego tematu, aby łatwiej przyswoić wiedzę.
 
 Kryteria akceptacji:
@@ -203,10 +187,9 @@ Kryteria akceptacji:
 - System informuje użytkownika o postępie generowania
 - Generowanie podsumowania nie trwa dłużej niż 30 sekund
 - Wygenerowane podsumowanie zawiera punkty kluczowe, daty, podsumowanie i listę pojęć
-- Podsumowanie zawiera odnośniki do oryginalnych notatek
 - System wyświetla wygenerowane podsumowanie użytkownikowi
 
-#### US-014: Akceptacja wygenerowanego podsumowania
+#### US-013: Akceptacja wygenerowanego podsumowania
 Jako zalogowany użytkownik, chcę akceptować wygenerowane podsumowania, aby zachować je do późniejszego wykorzystania.
 
 Kryteria akceptacji:
@@ -215,7 +198,7 @@ Kryteria akceptacji:
 - Zapisana notatka z podsumowaniem jest dostępna w wybranym temacie
 - System wyświetla potwierdzenie zapisania podsumowania
 
-#### US-015: Odrzucenie wygenerowanego podsumowania
+#### US-014: Odrzucenie wygenerowanego podsumowania
 Jako zalogowany użytkownik, chcę odrzucać nieodpowiednie podsumowania, aby móc wygenerować nowe.
 
 Kryteria akceptacji:
@@ -224,18 +207,17 @@ Kryteria akceptacji:
 - Użytkownik może zainicjować ponowne generowanie podsumowania
 - System wyświetla potwierdzenie odrzucenia podsumowania
 
-#### US-016: Korzystanie z podsumowania do nauki
+#### US-015: Korzystanie z podsumowania do nauki
 Jako zalogowany użytkownik, chcę korzystać z wygenerowanych podsumowań, aby efektywnie uczyć się i przygotowywać do sprawdzianów.
 
 Kryteria akceptacji:
 - Użytkownik może przeglądać zapisane podsumowania
-- Użytkownik może korzystać z odnośników w podsumowaniu, aby przejść do oryginalnych notatek
 - System wyświetla podsumowanie w czytelnym formacie
 - Podsumowanie zawiera najważniejsze informacje z oryginalnych notatek
 
 ### Zarządzanie kontem
 
-#### US-017: Zmiana hasła
+#### US-016: Zmiana hasła
 Jako zalogowany użytkownik, chcę zmienić moje hasło, aby zwiększyć bezpieczeństwo mojego konta.
 
 Kryteria akceptacji:
@@ -245,7 +227,7 @@ Kryteria akceptacji:
 - Po pomyślnej zmianie hasła, system wyświetla potwierdzenie
 - Użytkownik może zalogować się przy użyciu nowego hasła
 
-#### US-018: Usunięcie konta
+#### US-017: Usunięcie konta
 Jako zalogowany użytkownik, chcę mieć możliwość usunięcia mojego konta, jeśli nie chcę już korzystać z aplikacji.
 
 Kryteria akceptacji:
@@ -268,7 +250,6 @@ Kryteria akceptacji:
 - Średnia ilość notatek na lekcję (temat)
 - Aktywność użytkowników (częstotliwość logowania, tworzenia notatek)
 - Częstotliwość generowania podsumowań
-- Ilość utworzonych odnośników między notatkami
 - Rozkład głębokości struktury hierarchicznej (poziomy zagnieżdżenia)
 
 ### 6.3 Metryki techniczne

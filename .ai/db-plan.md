@@ -12,7 +12,7 @@
 ### topics
 - `id` UUID PRIMARY KEY DEFAULT gen_random_uuid()
 - `user_id` UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE
-- `parent_id` UUID REFERENCES topics(id) ON DELETE CASCADE
+- `parent_id` UUID NULLABLE REFERENCES topics(id) ON DELETE CASCADE
 - `name` TEXT NOT NULL
 - `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
 - `updated_at` TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -36,14 +36,6 @@
 - `character_count` INTEGER NOT NULL
 - `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
 
-### references
-- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid()
-- `user_id` UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE
-- `source_note_id` UUID NOT NULL REFERENCES notes(id) ON DELETE CASCADE
-- `target_note_id` UUID NOT NULL REFERENCES notes(id) ON DELETE CASCADE
-- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
-- UNIQUE (`source_note_id`, `target_note_id`)
-
 ## Relationships
 
 1. **One-to-Many: User → Topics**
@@ -66,10 +58,6 @@
    - Each topic can have multiple summaries
    - Each summary belongs to one topic
 
-6. **Many-to-Many: Notes → Notes (through References)**
-   - Each note can reference multiple other notes
-   - Each note can be referenced by multiple other notes
-
 ## Indexes
 
 1. `topics_user_id_idx` ON `topics(user_id)`
@@ -78,9 +66,7 @@
 4. `notes_topic_id_idx` ON `notes(topic_id)`
 5. `summaries_user_id_idx` ON `summaries(user_id)`
 6. `summaries_topic_id_idx` ON `summaries(topic_id)`
-7. `references_source_note_id_idx` ON `references(source_note_id)`
-8. `references_target_note_id_idx` ON `references(target_note_id)`
-9. `notes_content_gin_idx` ON `notes(content)` USING gin (to_tsvector('english', content))
+7. `notes_content_gin_idx` ON `notes(content)` USING gin (to_tsvector('english', content))
 
 ## Row Level Security (RLS) Policies
 
@@ -109,13 +95,6 @@ CREATE POLICY notes_isolation_policy ON notes
 
 ```sql
 CREATE POLICY summaries_isolation_policy ON summaries
-    USING (user_id = auth.uid());
-```
-
-### references
-
-```sql
-CREATE POLICY references_isolation_policy ON references
     USING (user_id = auth.uid());
 ```
 
@@ -182,7 +161,3 @@ EXECUTE FUNCTION update_character_count();
 
 6. **Metrics Tracking**:
    - The notes_per_topic view provides quick access to the number of notes per topic.
-
-7. **References Implementation**:
-   - The references table implements the @-mention functionality, allowing notes to reference other notes.
-   - Each reference links a source note to a target note. 
