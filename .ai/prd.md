@@ -25,9 +25,7 @@ Użytkownicy często spotykają się z następującymi problemami podczas nauki 
 ## 3. Wymagania funkcjonalne
 
 ### 3.1 System uwierzytelniania
-- Rejestracja użytkowników za pomocą email i hasła
-- Logowanie użytkowników 
-- Bezpieczne przechowywanie danych użytkowników (enkrypcja)
+- System uwierzytelniania za pomocą mechanizmów Supabase
 
 ### 3.2 Zarządzanie notatkami
 - Tworzenie notatek w formacie markdown
@@ -70,40 +68,9 @@ W ramach MVP (Minimum Viable Product) nie będą implementowane następujące fu
 
 ## 5. Historyjki użytkowników
 
-### Rejestracja i logowanie
-
-#### US-001: Rejestracja konta
-Jako nowy użytkownik, chcę zarejestrować konto w aplikacji, abym mógł korzystać z jej funkcjonalności.
-
-Kryteria akceptacji:
-- Użytkownik może zarejestrować się podając email i hasło
-- System weryfikuje poprawność adresu email
-- System sprawdza, czy hasło spełnia wymagania bezpieczeństwa
-- Użytkownik otrzymuje potwierdzenie pomyślnej rejestracji
-- System nie pozwala na rejestrację z wykorzystaniem istniejącego emaila
-
-#### US-002: Logowanie do aplikacji
-Jako zarejestrowany użytkownik, chcę zalogować się do aplikacji, abym mógł korzystać z moich notatek.
-
-Kryteria akceptacji:
-- Użytkownik może zalogować się podając email i hasło
-- System weryfikuje poprawność danych logowania
-- System wyświetla odpowiedni komunikat w przypadku błędnych danych
-- Po pomyślnym logowaniu użytkownik jest przekierowany do głównego widoku aplikacji
-- System umożliwia wylogowanie z aplikacji
-
-#### US-003: Resetowanie hasła
-Jako użytkownik, który zapomniał hasła, chcę zresetować hasło, abym mógł odzyskać dostęp do mojego konta.
-
-Kryteria akceptacji:
-- Użytkownik może zainicjować proces resetowania hasła podając adres email
-- System wysyła link do resetowania hasła na podany adres email
-- Link do resetowania hasła jest ważny przez określony czas
-- Użytkownik może ustawić nowe hasło po kliknięciu w link
-
 ### Zarządzanie strukturą notatek
 
-#### US-004: Tworzenie hierarchii tematów
+#### US-001: Tworzenie hierarchii tematów
 Jako zalogowany użytkownik, chcę tworzyć hierarchiczną strukturę tematów, aby organizować moje notatki.
 
 Kryteria akceptacji:
@@ -113,7 +80,7 @@ Kryteria akceptacji:
 - Nie ma ograniczenia na poziomy zagnieżdżenia tematów
 - Użytkownik może nadać nazwę każdemu tematowi
 
-#### US-005: Edycja nazwy tematu
+#### US-002: Edycja nazwy tematu
 Jako zalogowany użytkownik, chcę edytować nazwy tematów, aby dostosować strukturę do moich potrzeb.
 
 Kryteria akceptacji:
@@ -121,7 +88,7 @@ Kryteria akceptacji:
 - System zapisuje zmiany po zatwierdzeniu
 - Nowa nazwa jest od razu widoczna w strukturze drzewa
 
-#### US-006: Usuwanie tematu
+#### US-003: Usuwanie tematu
 Jako zalogowany użytkownik, chcę usuwać tematy, które nie są mi już potrzebne.
 
 Kryteria akceptacji:
@@ -130,7 +97,7 @@ Kryteria akceptacji:
 - Po potwierdzeniu, temat i wszystkie zawarte w nim notatki i podtematy są usuwane
 - System wyświetla potwierdzenie usunięcia tematu
 
-#### US-007: Nawigacja po strukturze tematów
+#### US-004: Nawigacja po strukturze tematów
 Jako zalogowany użytkownik, chcę nawigować po strukturze tematów, aby łatwo znajdować i zarządzać moimi notatkami.
 
 Kryteria akceptacji:
@@ -141,7 +108,7 @@ Kryteria akceptacji:
 
 ### Zarządzanie notatkami
 
-#### US-008: Tworzenie nowej notatki
+#### US-005: Tworzenie nowej notatki
 Jako zalogowany użytkownik, chcę tworzyć nowe notatki w wybranym temacie, aby zapisywać ważne informacje.
 
 Kryteria akceptacji:
@@ -151,7 +118,7 @@ Kryteria akceptacji:
 - System automatycznie zapisuje notatkę podczas edycji
 - Nowa notatka pojawia się w strukturze wybranego tematu
 
-#### US-009: Edycja notatki
+#### US-006: Edycja notatki
 Jako zalogowany użytkownik, chcę edytować istniejące notatki, aby aktualizować ich treść.
 
 Kryteria akceptacji:
@@ -160,7 +127,7 @@ Kryteria akceptacji:
 - Użytkownik może podejrzeć zmiany w czasie rzeczywistym
 - System zachowuje formatowanie markdown
 
-#### US-010: Usuwanie notatki
+#### US-007: Usuwanie notatki
 Jako zalogowany użytkownik, chcę usuwać niepotrzebne notatki, aby utrzymać porządek.
 
 Kryteria akceptacji:
@@ -169,7 +136,7 @@ Kryteria akceptacji:
 - Po potwierdzeniu, notatka jest trwale usuwana
 - System wyświetla potwierdzenie usunięcia notatki
 
-#### US-011: Przeglądanie notatek
+#### US-008: Przeglądanie notatek
 Jako zalogowany użytkownik, chcę przeglądać moje notatki, aby zapoznać się z ich treścią.
 
 Kryteria akceptacji:
@@ -179,7 +146,7 @@ Kryteria akceptacji:
 
 ### Generowanie i zarządzanie podsumowaniami
 
-#### US-012: Generowanie podsumowania tematu
+#### US-009: Generowanie podsumowania tematu
 Jako zalogowany użytkownik, chcę generować podsumowania notatek z wybranego tematu, aby łatwiej przyswoić wiedzę.
 
 Kryteria akceptacji:
@@ -189,7 +156,7 @@ Kryteria akceptacji:
 - Wygenerowane podsumowanie zawiera punkty kluczowe, daty, podsumowanie i listę pojęć
 - System wyświetla wygenerowane podsumowanie użytkownikowi
 
-#### US-013: Akceptacja wygenerowanego podsumowania
+#### US-010: Akceptacja wygenerowanego podsumowania
 Jako zalogowany użytkownik, chcę akceptować wygenerowane podsumowania, aby zachować je do późniejszego wykorzystania.
 
 Kryteria akceptacji:
@@ -198,7 +165,7 @@ Kryteria akceptacji:
 - Zapisana notatka z podsumowaniem jest dostępna w wybranym temacie
 - System wyświetla potwierdzenie zapisania podsumowania
 
-#### US-014: Odrzucenie wygenerowanego podsumowania
+#### US-011: Odrzucenie wygenerowanego podsumowania
 Jako zalogowany użytkownik, chcę odrzucać nieodpowiednie podsumowania, aby móc wygenerować nowe.
 
 Kryteria akceptacji:
@@ -207,7 +174,7 @@ Kryteria akceptacji:
 - Użytkownik może zainicjować ponowne generowanie podsumowania
 - System wyświetla potwierdzenie odrzucenia podsumowania
 
-#### US-015: Korzystanie z podsumowania do nauki
+#### US-012: Korzystanie z podsumowania do nauki
 Jako zalogowany użytkownik, chcę korzystać z wygenerowanych podsumowań, aby efektywnie uczyć się i przygotowywać do sprawdzianów.
 
 Kryteria akceptacji:
@@ -217,7 +184,7 @@ Kryteria akceptacji:
 
 ### Zarządzanie kontem
 
-#### US-016: Zmiana hasła
+#### US-013: Zmiana hasła
 Jako zalogowany użytkownik, chcę zmienić moje hasło, aby zwiększyć bezpieczeństwo mojego konta.
 
 Kryteria akceptacji:
@@ -227,7 +194,7 @@ Kryteria akceptacji:
 - Po pomyślnej zmianie hasła, system wyświetla potwierdzenie
 - Użytkownik może zalogować się przy użyciu nowego hasła
 
-#### US-017: Usunięcie konta
+#### US-014: Usunięcie konta
 Jako zalogowany użytkownik, chcę mieć możliwość usunięcia mojego konta, jeśli nie chcę już korzystać z aplikacji.
 
 Kryteria akceptacji:
