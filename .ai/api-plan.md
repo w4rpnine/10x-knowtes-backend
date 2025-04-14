@@ -14,7 +14,6 @@
 - **GET /topics**
   - Description: List all topics for the authenticated user
   - Query Parameters:
-    - `parent_id` (optional): Filter topics by parent topic ID (to support hierarchical structure)
     - `limit` (optional): Maximum number of results to return (default: 50)
     - `offset` (optional): Offset for pagination (default: 0)
   - Response Body:
@@ -41,7 +40,6 @@
     ```json
     {
       "title": "string",
-      "parent_id": "uuid" // Optional, for hierarchical structure
     }
     ```
   - Response Body:
@@ -49,7 +47,6 @@
     {
       "id": "uuid",
       "title": "string",
-      "parent_id": "uuid", // If provided
       "created_at": "timestamp",
       "updated_at": "timestamp"
     }
@@ -64,7 +61,6 @@
     {
       "id": "uuid",
       "title": "string",
-      "parent_id": "uuid", // If exists
       "created_at": "timestamp",
       "updated_at": "timestamp"
     }
@@ -85,7 +81,6 @@
     {
       "id": "uuid",
       "title": "string",
-      "parent_id": "uuid", // If exists
       "created_at": "timestamp",
       "updated_at": "timestamp"
     }
@@ -222,8 +217,7 @@
       "topic_id": "uuid",
       "summary_note_id": "uuid", // If summary has been generated
       "generated_at": "timestamp",
-      "accepted": "boolean",
-      "status": "string" // "processing", "completed", "failed"
+      "accepted": "boolean"
     }
     ```
   - Success: 200 OK
@@ -324,17 +318,12 @@ The application uses Supabase Authentication for handling user authentication. T
 
 ### Business Logic Implementation
 
-1. **Hierarchical Topic Structure**:
-   - Topics support parent-child relationships
-   - API provides filtering by parent_id to navigate hierarchy
-   - Changes to parent topics may affect child topics
-
-2. **Note Management**:
+1. **Note Management**:
    - Automatic saving during editing is handled client-side with periodic PUT requests
    - Notes are always associated with a topic
    - Notes are formatted in Markdown
 
-3. **AI Summary Generation**:
+2. **AI Summary Generation**:
    - Implemented as an asynchronous process
    - Summaries are generated following a standard structure:
      - Key points
@@ -345,11 +334,11 @@ The application uses Supabase Authentication for handling user authentication. T
    - Accepted summaries are saved as notes with is_summary=true
    - Summary generation process should not exceed 30 seconds
 
-4. **Cascading Operations**:
+3. **Cascading Operations**:
    - Deleting a topic cascades to all its notes and summary stats
    - Deleting a summary note sets related summary_stats.summary_note_id to null
 
-5. **Security and Data Integrity**:
+4. **Security and Data Integrity**:
    - All API endpoints enforce row-level security
    - Input validation applied before database operations
    - Appropriate error handling for all operations 
