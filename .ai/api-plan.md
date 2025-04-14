@@ -195,42 +195,27 @@
 
 ### Summary Generation
 
-- **POST /topics/{topicId}/generate-summary**
-  - Description: Generate a summary for a topic's notes using AI
+- **POST /topics/{topicId}/summary**
+  - Description: Generate a summary (as a note) for a topic's notes using AI
   - Response Body:
     ```json
     {
       "summary_stat_id": "uuid",
       "topic_id": "uuid",
-      "status": "processing"
+      "note_id": "uuid"
     }
     ```
   - Success: 202 Accepted
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **GET /summary-stats/{id}**
-  - Description: Get the status and details of a summary generation process
-  - Response Body:
-    ```json
-    {
-      "id": "uuid",
-      "topic_id": "uuid",
-      "summary_note_id": "uuid", // If summary has been generated
-      "generated_at": "timestamp",
-      "accepted": "boolean"
-    }
-    ```
-  - Success: 200 OK
-  - Errors: 401 Unauthorized, 403 Forbidden, 404 Not Found
-
-- **PUT /summary-stats/{id}/accept**
+- **PUT /summary/{id}/accept**
   - Description: Accept a generated summary
   - Response Body:
     ```json
     {
       "id": "uuid",
       "topic_id": "uuid",
-      "summary_note_id": "uuid",
+      "note_id": "uuid",
       "generated_at": "timestamp",
       "accepted": true
     }
@@ -245,36 +230,13 @@
     {
       "id": "uuid",
       "topic_id": "uuid",
-      "summary_note_id": null,
+      "note_id": null,
       "generated_at": "timestamp",
       "accepted": false
     }
     ```
   - Success: 200 OK
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
-
-- **GET /topics/{topicId}/summaries**
-  - Description: Get all summaries for a topic
-  - Response Body:
-    ```json
-    {
-      "data": [
-        {
-          "id": "uuid",
-          "topic_id": "uuid",
-          "title": "string",
-          "content": "string",
-          "is_summary": true,
-          "created_at": "timestamp",
-          "updated_at": "timestamp"
-        }
-      ],
-      "count": "integer",
-      "total": "integer"
-    }
-    ```
-  - Success: 200 OK
-  - Errors: 401 Unauthorized, 403 Forbidden, 404 Not Found
 
 ## 3. Authentication and Authorization
 
@@ -324,7 +286,7 @@ The application uses Supabase Authentication for handling user authentication. T
    - Notes are formatted in Markdown
 
 2. **AI Summary Generation**:
-   - Implemented as an asynchronous process
+   - Implemented as an synchronous process
    - Summaries are generated following a standard structure:
      - Key points
      - Dates
