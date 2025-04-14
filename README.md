@@ -11,7 +11,7 @@ A web application for creating, organizing, and generating AI-powered summaries 
 - [Project Scope](#project-scope)
 - [Project Status](#project-status)
 - [License](#license)
-- [API Endpointy](#api-endpointy)
+- [API Endpoints](#api-endpoints)
 
 ## Project Description
 
@@ -151,16 +151,16 @@ The project is currently in early development. Core features are being implement
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## API Endpointy
+## API Endpoints
 
 ## Topics
 
 ### GET /api/topics
-Pobiera listę tematów dla użytkownika.
+Retrieves a list of topics for the user.
 
 **Query Parameters:**
-- `limit` (opcjonalny): Maksymalna liczba wyników (domyślnie: 50)
-- `offset` (opcjonalny): Offset dla paginacji (domyślnie: 0)
+- `limit` (optional): Maximum number of results (default: 50)
+- `offset` (optional): Offset for pagination (default: 0)
 
 **Response:** 
 ```json
@@ -182,15 +182,15 @@ Pobiera listę tematów dla użytkownika.
 ## Notes
 
 ### GET /api/topics/{topicId}/notes
-Pobiera listę notatek dla określonego tematu.
+Retrieves a list of notes for a specific topic.
 
 **Path Parameters:**
-- `topicId`: UUID tematu
+- `topicId`: Topic UUID
 
 **Query Parameters:**
-- `is_summary` (opcjonalny): Filtrowanie wg. flagi podsumowania (true/false)
-- `limit` (opcjonalny): Maksymalna liczba wyników (domyślnie: 50)
-- `offset` (opcjonalny): Offset dla paginacji (domyślnie: 0)
+- `is_summary` (optional): Filter by summary flag (true/false)
+- `limit` (optional): Maximum number of results (default: 50)
+- `offset` (optional): Offset for pagination (default: 0)
 
 **Response:**
 ```json
@@ -213,17 +213,17 @@ Pobiera listę notatek dla określonego tematu.
 ```
 
 ### POST /api/topics/{topicId}/notes
-Tworzy nową notatkę w ramach określonego tematu.
+Creates a new note within a specified topic.
 
 **Path Parameters:**
-- `topicId`: UUID tematu
+- `topicId`: Topic UUID
 
 **Request Body:**
 ```json
 {
   "title": "string",
   "content": "string",
-  "is_summary": "boolean" // Opcjonalny, domyślnie false
+  "is_summary": "boolean" // Optional, default is false
 }
 ```
 
@@ -242,7 +242,7 @@ Tworzy nową notatkę w ramach określonego tematu.
 ```
 
 **Status Codes:**
-- 201 Created: Notatka została pomyślnie utworzona
-- 400 Bad Request: Nieprawidłowe dane wejściowe
-- 404 Not Found: Temat nie istnieje
-- 500 Internal Server Error: Błąd serwera
+- 201 Created: Note was successfully created
+- 400 Bad Request: Invalid input data
+- 404 Not Found: Topic does not exist
+- 500 Internal Server Error: Server error
