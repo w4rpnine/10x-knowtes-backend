@@ -95,20 +95,13 @@ The application supports students, professionals, researchers, and hobbyists in 
 
 ### MVP Features
 
-- **Authentication System**
-  - User registration with email and password
-  - User login
-  - Secure data storage (encryption)
-
 - **Note Management**
   - Create notes in markdown format
   - Edit existing notes
   - Delete notes
-  - Automatic saving during editing
 
 - **Hierarchical Organization**
-  - Multi-level grouping of notes into topics (nodes)
-  - Unlimited nesting structure
+  - Single-level grouping of notes into topics (nodes)
   - Navigation through a tree panel and breadcrumb
 
 - **AI Summary Generation**
@@ -117,15 +110,11 @@ The application supports students, professionals, researchers, and hobbyists in 
   - Save accepted summaries as new notes
   - Standard summary structure (key points, dates, summary, concept list)
 
-- **Reference System**
-  - Create references between notes
-  - Display references as hyperlinks to original notes
-
 ### Features Outside MVP Scope
 
 - Non-text notes
 - Markdown syntax formatting
-- References to note fragments
+- References to notes
 - External sources import
 - Note sharing between users
 - Integration with other note-taking tools
