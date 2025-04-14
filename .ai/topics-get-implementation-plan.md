@@ -91,7 +91,7 @@ type TopicsQueryParams = z.infer<typeof topicsQuerySchema>;
    mkdir -p src/lib/services
    ```
 
-2. Stworzenie usługi dla tematów (`src/lib/services/topics.service.ts`):
+2. Stworzenie usługi dla tematów (`src/lib/services/topics.service`):
    ```typescript
    import type { TopicDTO, PaginatedTopicsResponseDTO } from "../../types";
    import type { SupabaseClient } from "../../db/supabase.client";

@@ -23,7 +23,7 @@ IMPORTANT: Check prerequisites before perfoming actions below. If they're not me
 Create the file `/src/db/supabase.client.ts` with the following content:
 
 ```ts
-import { createClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from "../../db/supabase.client";
 
 import type { Database } from '../db/database.types.ts';
 

@@ -88,7 +88,7 @@ export const createTopicSchema = z.object({
 Utworzenie lub rozbudowa serwisu `src/lib/services/topic.service.ts`:
 
 ```typescript
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "../../db/supabase.client";
 import type { CreateTopicCommand, TopicDTO } from "../../types";
 
 export class TopicService {

@@ -1,5 +1,5 @@
 import type { TopicDTO, PaginatedTopicsResponseDTO, CreateTopicCommand } from "../../types";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "../../db/supabase.client";
 import type { Database } from "../../db/database.types";
 
 export interface TopicsQueryParams {
