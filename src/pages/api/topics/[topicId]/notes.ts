@@ -3,6 +3,8 @@ import { getNotesByTopicId } from "../../../../lib/services/notes.service";
 import { DEFAULT_USER_ID, supabaseClient } from "../../../../db/supabase.client";
 import { getNotesQuerySchema, topicIdSchema } from "../../../../lib/schemas/notes.schema";
 import { fromZodError } from "zod-validation-error";
+import { createNoteSchema } from "../../../../lib/schemas/note.schema";
+import { createNote } from "../../../../lib/services/notes.service";
 
 export const prerender = false;
 
@@ -105,6 +107,55 @@ export const GET: APIRoute = async ({ params, request }) => {
     console.error("Błąd podczas pobierania notatek:", error);
 
     return new Response(JSON.stringify({ error: "Wystąpił błąd podczas przetwarzania żądania" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+};
+
+export const POST: APIRoute = async ({ request, params, locals }) => {
+  const supabase = locals.supabase;
+
+  const topicId = params.topicId;
+
+  if (!topicId) {
+    return new Response(JSON.stringify({ error: "Topic ID is required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  try {
+    // Parsuj i waliduj dane wejściowe
+    const requestData = await request.json();
+    const validatedData = createNoteSchema.safeParse(requestData);
+
+    if (!validatedData.success) {
+      return new Response(
+        JSON.stringify({
+          error: "Validation failed",
+          details: validatedData.error.format(),
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Utworzenie notatki
+    const note = await createNote(supabase, DEFAULT_USER_ID, topicId, validatedData.data);
+
+    if (!note) {
+      return new Response(JSON.stringify({ error: "Topic not found or access denied" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Zwróć utworzoną notatkę
+    return new Response(JSON.stringify(note), { status: 201, headers: { "Content-Type": "application/json" } });
+  } catch (error) {
+    console.error("Error creating note:", error);
+
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

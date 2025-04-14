@@ -11,6 +11,7 @@ A web application for creating, organizing, and generating AI-powered summaries 
 - [Project Scope](#project-scope)
 - [Project Status](#project-status)
 - [License](#license)
+- [API Endpointy](#api-endpointy)
 
 ## Project Description
 
@@ -149,3 +150,99 @@ The project is currently in early development. Core features are being implement
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## API Endpointy
+
+## Topics
+
+### GET /api/topics
+Pobiera listę tematów dla użytkownika.
+
+**Query Parameters:**
+- `limit` (opcjonalny): Maksymalna liczba wyników (domyślnie: 50)
+- `offset` (opcjonalny): Offset dla paginacji (domyślnie: 0)
+
+**Response:** 
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "user_id": "uuid",
+      "title": "string",
+      "created_at": "timestamp",
+      "updated_at": "timestamp"
+    }
+  ],
+  "count": "integer",
+  "total": "integer"
+}
+```
+
+## Notes
+
+### GET /api/topics/{topicId}/notes
+Pobiera listę notatek dla określonego tematu.
+
+**Path Parameters:**
+- `topicId`: UUID tematu
+
+**Query Parameters:**
+- `is_summary` (opcjonalny): Filtrowanie wg. flagi podsumowania (true/false)
+- `limit` (opcjonalny): Maksymalna liczba wyników (domyślnie: 50)
+- `offset` (opcjonalny): Offset dla paginacji (domyślnie: 0)
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": "uuid",
+      "topic_id": "uuid",
+      "user_id": "uuid",
+      "title": "string",
+      "content": "string",
+      "is_summary": "boolean",
+      "created_at": "timestamp",
+      "updated_at": "timestamp"
+    }
+  ],
+  "count": "integer",
+  "total": "integer"
+}
+```
+
+### POST /api/topics/{topicId}/notes
+Tworzy nową notatkę w ramach określonego tematu.
+
+**Path Parameters:**
+- `topicId`: UUID tematu
+
+**Request Body:**
+```json
+{
+  "title": "string",
+  "content": "string",
+  "is_summary": "boolean" // Opcjonalny, domyślnie false
+}
+```
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "topic_id": "uuid",
+  "user_id": "uuid",
+  "title": "string",
+  "content": "string",
+  "is_summary": "boolean",
+  "created_at": "timestamp",
+  "updated_at": "timestamp"
+}
+```
+
+**Status Codes:**
+- 201 Created: Notatka została pomyślnie utworzona
+- 400 Bad Request: Nieprawidłowe dane wejściowe
+- 404 Not Found: Temat nie istnieje
+- 500 Internal Server Error: Błąd serwera
