@@ -1,4 +1,4 @@
-import type { TopicDTO, PaginatedTopicsResponseDTO } from "../../types";
+import type { TopicDTO, PaginatedTopicsResponseDTO, CreateTopicCommand } from "../../types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../db/database.types";
 
@@ -47,4 +47,32 @@ export async function getTopics(
     count: topicDTOs.length,
     total: count || 0,
   };
+}
+
+/**
+ * Creates a new topic for a specific user
+ * @param supabase - The Supabase client instance
+ * @param userId - The ID of the user creating the topic
+ * @param command - The command containing topic creation data
+ * @returns The created topic as a DTO
+ */
+export async function createTopic(
+  supabase: SupabaseClient<Database>,
+  userId: string,
+  command: CreateTopicCommand
+): Promise<TopicDTO> {
+  const { data, error } = await supabase
+    .from("topics")
+    .insert({
+      title: command.title,
+      user_id: userId,
+    })
+    .select("*")
+    .single();
+
+  if (error) {
+    throw new Error(`Nie można utworzyć tematu: ${error.message}`);
+  }
+
+  return data;
 }
