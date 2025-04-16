@@ -1,0 +1,12 @@
+---
+// This will be a client component that gets data from the topic tree
+import { BreadcrumbPath } from "./BreadcrumbPath";
+---
+
+<nav aria-label="Breadcrumb" class="hidden sm:block">
+  <BreadcrumbPath client:load />
+</nav>
+
+<script>
+  // Client-side code will render the breadcrumb items here
+</script>

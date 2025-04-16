@@ -1,137 +1,100 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export interface Database {
-  graphql_public: {
-    Tables: Record<never, never>;
-    Views: Record<never, never>;
-    Functions: {
-      graphql: {
-        Args: {
-          operationName?: string;
-          query?: string;
-          variables?: Json;
-          extensions?: Json;
-        };
-        Returns: Json;
-      };
-    };
-    Enums: Record<never, never>;
-    CompositeTypes: Record<never, never>;
-  };
   public: {
     Tables: {
-      notes: {
+      topics: {
         Row: {
-          content: string;
-          created_at: string;
           id: string;
-          is_summary: boolean;
           title: string;
-          topic_id: string;
-          updated_at: string;
           user_id: string;
+          parent_id: string | null;
+          created_at: string;
+          updated_at: string;
         };
         Insert: {
-          content: string;
-          created_at?: string;
           id?: string;
-          is_summary?: boolean;
           title: string;
-          topic_id: string;
-          updated_at?: string;
           user_id: string;
+          parent_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Update: {
-          content?: string;
-          created_at?: string;
           id?: string;
-          is_summary?: boolean;
           title?: string;
-          topic_id?: string;
-          updated_at?: string;
           user_id?: string;
+          parent_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: "notes_topic_id_fkey";
-            columns: ["topic_id"];
-            isOneToOne: false;
-            referencedRelation: "topics";
-            referencedColumns: ["id"];
-          },
-        ];
+      };
+      notes: {
+        Row: {
+          id: string;
+          title: string;
+          content: string;
+          is_summary: boolean;
+          topic_id: string;
+          user_id: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          content: string;
+          is_summary?: boolean;
+          topic_id: string;
+          user_id: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          content?: string;
+          is_summary?: boolean;
+          topic_id?: string;
+          user_id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
       };
       summary_stats: {
         Row: {
-          accepted: boolean;
-          generated_at: string;
           id: string;
-          summary_note_id: string | null;
+          note_id: string;
           topic_id: string;
           user_id: string;
+          status: "pending" | "processing" | "completed" | "failed";
+          created_at: string;
+          updated_at: string;
         };
         Insert: {
-          accepted?: boolean;
-          generated_at?: string;
           id?: string;
-          summary_note_id?: string | null;
+          note_id: string;
           topic_id: string;
           user_id: string;
+          status?: "pending" | "processing" | "completed" | "failed";
+          created_at?: string;
+          updated_at?: string;
         };
         Update: {
-          accepted?: boolean;
-          generated_at?: string;
           id?: string;
-          summary_note_id?: string | null;
+          note_id?: string;
           topic_id?: string;
           user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "summary_stats_summary_note_id_fkey";
-            columns: ["summary_note_id"];
-            isOneToOne: false;
-            referencedRelation: "notes";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "summary_stats_topic_id_fkey";
-            columns: ["topic_id"];
-            isOneToOne: false;
-            referencedRelation: "topics";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      topics: {
-        Row: {
-          created_at: string;
-          id: string;
-          title: string;
-          updated_at: string;
-          user_id: string;
-        };
-        Insert: {
+          status?: "pending" | "processing" | "completed" | "failed";
           created_at?: string;
-          id?: string;
-          title: string;
           updated_at?: string;
-          user_id: string;
         };
-        Update: {
-          created_at?: string;
-          id?: string;
-          title?: string;
-          updated_at?: string;
-          user_id?: string;
-        };
-        Relationships: [];
       };
     };
-    Views: Record<never, never>;
-    Functions: Record<never, never>;
-    Enums: Record<never, never>;
-    CompositeTypes: Record<never, never>;
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 }
 

@@ -1,8 +1,13 @@
 ---
-import Welcome from "../components/Welcome.astro";
-import Layout from "../layouts/Layout.astro";
+import MainLayout from "../layouts/MainLayout.astro";
+import LeftPanel from "../components/LeftPanel.astro";
+import RightPanel from "../components/RightPanel.astro";
+
+// Server-side code can check if user is authenticated here
+// and redirect if not authenticated
 ---
 
-<Layout>
-  <Welcome />
-</Layout>
+<MainLayout>
+  <LeftPanel />
+  <RightPanel />
+</MainLayout>

@@ -54,3 +54,24 @@ export interface PaginatedResponseDTO<T> {
 export type PaginatedTopicsResponseDTO = PaginatedResponseDTO<TopicDTO>;
 export type PaginatedNotesResponseDTO = PaginatedResponseDTO<NoteDTO>;
 export type PaginatedSummariesResponseDTO = PaginatedResponseDTO<NoteDTO>;
+
+// View Models
+export interface TreeNodeViewModel {
+  id: string;
+  title: string;
+  children: TreeNodeViewModel[];
+  isExpanded: boolean;
+  level: number;
+  type: "topic" | "note";
+}
+
+export interface TopicTreeViewModel {
+  nodes: TreeNodeViewModel[];
+  selectedNodeId: string | null;
+}
+
+export interface BreadcrumbItemViewModel {
+  id: string;
+  title: string;
+  level: number;
+}

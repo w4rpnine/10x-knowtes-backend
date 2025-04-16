@@ -1,0 +1,14 @@
+---
+import { TopicTree } from "./TopicTree";
+import { NewTopicButton } from "./NewTopicButton";
+---
+
+<div class="w-64 border-r border-border p-4 flex flex-col h-[calc(100vh-3.5rem-2.5rem)]">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-lg font-semibold">Topics</h2>
+    <NewTopicButton client:load />
+  </div>
+  <div class="overflow-auto flex-1">
+    <TopicTree client:load />
+  </div>
+</div>
