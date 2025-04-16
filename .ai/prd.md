@@ -104,7 +104,6 @@ Kryteria akceptacji:
 - Użytkownik może rozwijać i zwijać poszczególne gałęzie drzewa tematów
 - System wyświetla aktualną ścieżkę nawigacji (breadcrumb) na górze ekranu
 - Kliknięcie w temat powoduje wyświetlenie jego zawartości (podtematów i notatek)
-- Kliknięcie w element breadcrumb przenosi użytkownika do odpowiedniego poziomu w hierarchii
 
 ### Zarządzanie notatkami
 
