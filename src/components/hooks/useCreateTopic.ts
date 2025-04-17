@@ -1,16 +1,15 @@
 import { useState } from "react";
 import type { CreateTopicCommand } from "../../types";
 import { getSupabaseClient } from "../../lib/supabase";
-
+import { DEFAULT_USER_ID } from "../../db/supabase.client";
 // Function to create a new topic
-const createTopic = async (supabase: any, userId: string, command: CreateTopicCommand) => {
+const createTopic = async (supabase: SupabaseClient, userId: string, command: CreateTopicCommand) => {
   const { data, error } = await supabase
     .from("topics")
     .insert([
       {
         title: command.title,
         user_id: userId,
-        parent_id: null, // Default to root level
       },
     ])
     .select()
@@ -57,7 +56,8 @@ export const useCreateTopic = (onTopicCreated: () => void) => {
 
     try {
       const supabase = await getSupabaseClient();
-      const userId = (await supabase.auth.getUser()).data.user?.id;
+      // Use DEFAULT_USER_ID instead of authenticating
+      const userId = DEFAULT_USER_ID;
 
       if (!userId) {
         throw new Error("User is not logged in");
