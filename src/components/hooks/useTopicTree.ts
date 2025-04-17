@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { TopicDTO, BreadcrumbItemViewModel, TreeNodeViewModel } from "../../types";
 import { getSupabaseClient } from "../../lib/supabase";
+import { DEFAULT_USER_ID, type SupabaseClient } from "../../db/supabase.client";
 
 interface GetTopicsParams {
   limit: number;
@@ -8,7 +9,7 @@ interface GetTopicsParams {
 }
 
 // Function to get topics from Supabase
-const getTopics = async (supabase: any, userId: string, params: GetTopicsParams) => {
+const getTopics = async (supabase: SupabaseClient, userId: string, params: GetTopicsParams) => {
   const { data, error, count } = await supabase
     .from("topics")
     .select("*", { count: "exact" })
@@ -87,7 +88,8 @@ export const useTopicTree = () => {
 
     try {
       const supabase = await getSupabaseClient();
-      const userId = (await supabase.auth.getUser()).data.user?.id;
+      // Use DEFAULT_USER_ID instead of authenticating
+      const userId = DEFAULT_USER_ID;
 
       if (!userId) {
         throw new Error("User is not logged in");
