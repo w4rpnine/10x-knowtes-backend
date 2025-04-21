@@ -1,6 +1,11 @@
 import type { TopicDTO, PaginatedTopicsResponseDTO, CreateTopicCommand } from "../../types";
-import type { SupabaseClient } from "../../db/supabase.client";
+import { supabaseClient } from "../../db/supabase.client";
 import type { Database } from "../../db/database.types";
+
+// Define a type for topic with notes from the database
+type TopicWithNotes = Database["public"]["Tables"]["topics"]["Row"] & {
+  notes: Database["public"]["Tables"]["notes"]["Row"][];
+};
 
 export interface TopicsQueryParams {
   limit?: number;
@@ -15,14 +20,23 @@ export interface TopicsQueryParams {
  * @returns A paginated response containing topic data
  */
 export async function getTopics(
-  supabase: SupabaseClient<Database>,
+  supabase: typeof supabaseClient,
   userId: string,
   params: TopicsQueryParams
 ): Promise<PaginatedTopicsResponseDTO> {
   const { limit = 50, offset = 0 } = params;
 
-  // Prepare query with user_id filtering
-  let query = supabase.from("topics").select("*", { count: "exact" }).eq("user_id", userId);
+  // Prepare query with user_id filtering and include notes
+  let query = supabase
+    .from("topics")
+    .select(
+      `
+      *,
+      notes (*)
+    `,
+      { count: "exact" }
+    )
+    .eq("user_id", userId);
 
   // Apply pagination
   query = query.range(offset, offset + limit - 1);
@@ -38,8 +52,9 @@ export async function getTopics(
   }
 
   // Map database entities to DTOs
-  const topicDTOs: TopicDTO[] = data.map((topic: Database["public"]["Tables"]["topics"]["Row"]) => ({
+  const topicDTOs: TopicDTO[] = data.map((topic: TopicWithNotes) => ({
     ...topic,
+    notes: topic.notes || [],
   }));
 
   return {
@@ -57,7 +72,7 @@ export async function getTopics(
  * @returns The created topic as a DTO
  */
 export async function createTopic(
-  supabase: SupabaseClient<Database>,
+  supabase: typeof supabaseClient,
   userId: string,
   command: CreateTopicCommand
 ): Promise<TopicDTO> {

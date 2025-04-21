@@ -6,7 +6,9 @@ type NoteEntity = Database["public"]["Tables"]["notes"]["Row"];
 type SummaryStatEntity = Database["public"]["Tables"]["summary_stats"]["Row"];
 
 // DTO Types for API responses
-export type TopicDTO = TopicEntity;
+export type TopicDTO = TopicEntity & {
+  notes?: NoteDTO[];
+};
 
 export type NoteDTO = NoteEntity;
 
