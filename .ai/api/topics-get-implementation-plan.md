@@ -1,7 +1,7 @@
 # API Endpoint Implementation Plan: GET /topics
 
 ## 1. Przegląd punktu końcowego
-Endpoint GET /topics umożliwia pobranie listy wszystkich tematów dla zalogowanego użytkownika z opcjonalnym filtrowaniem i paginacją. Zapewnia dostęp do podstawowych metadanych tematów.
+Endpoint GET /topics umożliwia pobranie listy wszystkich tematów dla zalogowanego użytkownika wraz z powiązanymi notatkami, z opcjonalnym filtrowaniem i paginacją. Zapewnia dostęp do podstawowych metadanych tematów oraz wszystkich notatek pod każdym tematem.
 
 ## 2. Szczegóły żądania
 - Metoda HTTP: GET
@@ -15,7 +15,7 @@ Endpoint GET /topics umożliwia pobranie listy wszystkich tematów dla zalogowan
 ## 3. Wykorzystywane typy
 ```typescript
 // Typy odpowiedzi
-import { TopicDTO, PaginatedTopicsResponseDTO } from "../../types";
+import { TopicDTO, NoteDTO, PaginatedTopicsResponseDTO } from "../../types";
 
 // Typy walidacji parametrów zapytania
 import { z } from "zod";
@@ -40,6 +40,16 @@ type TopicsQueryParams = z.infer<typeof topicsQuerySchema>;
       "title": "string",
       "created_at": "timestamp",
       "updated_at": "timestamp",
+      "notes": [
+        {
+          "id": "uuid",
+          "title": "string",
+          "content": "string",
+          "created_at": "timestamp",
+          "updated_at": "timestamp",
+          "is_summary": "boolean"
+        }
+      ]
     }
   ],
   "count": "integer",
@@ -54,9 +64,10 @@ type TopicsQueryParams = z.infer<typeof topicsQuerySchema>;
 ## 5. Przepływ danych
 1. Walidacja parametrów zapytania przy użyciu Zod
 2. Uwierzytelnienie użytkownika poprzez middleware Supabase
-3. Zapytanie do bazy danych o tematy użytkownika
+3. Zapytanie do bazy danych o tematy użytkownika wraz z powiązanymi notatkami
    - Zastosowanie paginacji (limit/offset)
-4. Konwersja danych encji do DTO
+   - Dołączenie powiązanych notatek poprzez relację
+4. Konwersja danych encji do DTO z zagnieżdżonymi notatkami
 5. Formatowanie odpowiedzi paginowanej
 6. Zwrócenie danych w formacie JSON
 
@@ -79,8 +90,11 @@ type TopicsQueryParams = z.infer<typeof topicsQuerySchema>;
 
 ## 8. Rozważania dotyczące wydajności
 - Paginacja: Ograniczenie liczby zwracanych rekordów
-- Indeksowanie: Upewnienie się, że kolumna user_id jest zaindeksowana
-- Selektywne pobieranie kolumn: Wybieranie tylko wymaganych kolumn
+- Indeksowanie: 
+  - Upewnienie się, że kolumna user_id jest zaindeksowana
+  - Indeksowanie relacji między tematami a notatkami
+- Selektywne pobieranie kolumn: Wybieranie tylko wymaganych kolumn z obu tabel
+- Optymalizacja zapytania JOIN: Monitorowanie wydajności zapytania z dołączonymi notatkami
 - Pamięć podręczna:
   - Rozważenie pamięci podręcznej po stronie klienta z nagłówkami Cache-Control
   - Potencjalne dodanie pamięci podręcznej po stronie serwera dla częstych zapytań
@@ -108,10 +122,13 @@ type TopicsQueryParams = z.infer<typeof topicsQuerySchema>;
    ): Promise<PaginatedTopicsResponseDTO> {
      const { limit = 50, offset = 0 } = params;
      
-     // Przygotowanie zapytania z filtrowaniem według user_id
+     // Przygotowanie zapytania z filtrowaniem według user_id i dołączeniem notatek
      let query = supabase
        .from("topics")
-       .select("*", { count: "exact" })
+       .select(`
+         *,
+         notes (*)
+       `, { count: "exact" })
        .eq("user_id", userId);
      
      // Paginacja
@@ -127,9 +144,10 @@ type TopicsQueryParams = z.infer<typeof topicsQuerySchema>;
        throw error;
      }
      
-     // Tworzenie obiektów DTO
+     // Tworzenie obiektów DTO z zagnieżdżonymi notatkami
      const topicDTOs: TopicDTO[] = data.map(topic => ({
-       ...topic
+       ...topic,
+       notes: topic.notes || []
      }));
      
      return {
