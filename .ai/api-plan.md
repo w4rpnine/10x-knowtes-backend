@@ -98,10 +98,19 @@
   - Success: 200 OK
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **DELETE /topics/{id} - TODO**
+- **DELETE /topics/{id} - DONE**
   - Description: Delete a topic and all its related notes (cascading delete)
-  - Response: 204 No Content
-  - Errors: 401 Unauthorized, 403 Forbidden, 404 Not Found
+  - Parameters:
+    - `id` (required): UUID of the topic to delete
+  - Request Body: None
+  - Response Body: None
+  - Success: 204 No Content
+  - Errors:
+    - 400 Bad Request - Invalid UUID format
+    - 401 Unauthorized - User not authenticated
+    - 403 Forbidden - User does not own the topic
+    - 404 Not Found - Topic does not exist
+    - 500 Internal Server Error - Server error during deletion
 
 ### Notes
 

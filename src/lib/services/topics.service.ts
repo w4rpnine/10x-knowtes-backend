@@ -1,7 +1,7 @@
 import type { TopicDTO, PaginatedTopicsResponseDTO, CreateTopicCommand } from "../../types";
 import type { SupabaseClient } from "../../db/supabase.client";
 import type { Database } from "../../db/database.types";
-import { updateTopicSchema } from '../schemas/topic.schema';
+import { updateTopicSchema } from "../schemas/topic.schema";
 
 // Define a type for topic with notes from the database
 type TopicWithNotes = Database["public"]["Tables"]["topics"]["Row"] & {
@@ -101,25 +101,23 @@ export async function createTopic(
  * @returns The topic with all its notes as a DTO
  * @throws Error if topic not found or database error occurs
  */
-export async function getTopic(
-  supabase: SupabaseClient,
-  userId: string,
-  topicId: string
-): Promise<TopicDTO> {
+export async function getTopic(supabase: SupabaseClient, userId: string, topicId: string): Promise<TopicDTO> {
   if (!supabase) {
     throw new Error("Supabase client is not initialized");
   }
 
   const { data, error } = await supabase
     .from("topics")
-    .select(`
+    .select(
+      `
       *,
       notes (*)
-    `)
+    `
+    )
     .eq("id", topicId)
     .eq("user_id", userId)
     .single();
-  
+
   if (error) {
     if (error.code === "PGRST116") {
       throw new Error("Topic not found");
@@ -130,10 +128,10 @@ export async function getTopic(
   if (!data) {
     throw new Error("Topic not found");
   }
-  
+
   return {
     ...data,
-    notes: data.notes || []
+    notes: data.notes || [],
   };
 }
 
@@ -157,31 +155,59 @@ export async function updateTopic(
 
   // Verify topic exists and user has access
   const { data: existingTopic, error: fetchError } = await supabase
-    .from('topics')
+    .from("topics")
     .select()
-    .eq('id', topicId)
-    .eq('user_id', userId)
+    .eq("id", topicId)
+    .eq("user_id", userId)
     .single();
 
   if (fetchError || !existingTopic) {
-    throw new Error('Topic not found or access denied');
+    throw new Error("Topic not found or access denied");
   }
 
   // Update the topic
   const { data: updatedTopic, error: updateError } = await supabase
-    .from('topics')
-    .update({ 
+    .from("topics")
+    .update({
       title: validatedData.title,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
-    .eq('id', topicId)
-    .eq('user_id', userId)
+    .eq("id", topicId)
+    .eq("user_id", userId)
     .select()
     .single();
 
   if (updateError || !updatedTopic) {
-    throw new Error('Failed to update topic');
+    throw new Error("Failed to update topic");
   }
 
   return updatedTopic;
+}
+
+/**
+ * Deletes a topic and all its related notes
+ * @param supabase - The Supabase client instance
+ * @param userId - The ID of the user
+ * @param topicId - The ID of the topic to delete
+ * @throws Error if topic not found, access denied, or deletion fails
+ */
+export async function deleteTopic(supabase: SupabaseClient, userId: string, topicId: string): Promise<void> {
+  // Verify topic exists and user has access
+  const { data: existingTopic, error: fetchError } = await supabase
+    .from("topics")
+    .select()
+    .eq("id", topicId)
+    .eq("user_id", userId)
+    .single();
+
+  if (fetchError || !existingTopic) {
+    throw new Error("Topic not found or access denied");
+  }
+
+  // Delete the topic (notes will be deleted via CASCADE)
+  const { error: deleteError } = await supabase.from("topics").delete().eq("id", topicId).eq("user_id", userId);
+
+  if (deleteError) {
+    throw new Error("Failed to delete topic");
+  }
 }
