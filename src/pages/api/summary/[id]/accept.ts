@@ -2,6 +2,7 @@ import { z } from "zod";
 import { acceptSummary } from "../../../../lib/services/summary.service";
 import type { APIContext } from "astro";
 import type { AcceptSummaryCommand } from "../../../../types";
+import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
 
 export const prerender = false;
 
@@ -46,16 +47,8 @@ export async function PUT({ locals, params, request }: APIContext) {
     });
   }
 
-  // Check if user is authenticated
-  if (!locals.session?.user) {
-    return new Response(JSON.stringify({ error: "Unauthorized", message: "Access denied" }), {
-      status: 401,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-    });
-  }
+  // For development/testing, use DEFAULT_USER_ID
+  const userId = DEFAULT_USER_ID;
 
   // Validate URL parameters
   const paramsResult = paramsSchema.safeParse(params);
@@ -100,9 +93,8 @@ export async function PUT({ locals, params, request }: APIContext) {
     // Empty body or invalid JSON are acceptable since we expect an empty body
   }
 
-  // Get user ID and summary ID
+  // Get summary ID
   const { id: summaryId } = paramsResult.data;
-  const userId = locals.session.user.id;
 
   try {
     // Call service function to accept the summary
