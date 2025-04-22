@@ -1,6 +1,5 @@
 import type { SupabaseClient } from "../../db/supabase.client";
-import type { Database } from "../../db/database.types";
-import type { SummaryGenerationResponseDTO } from "../../types";
+import type { SummaryGenerationResponseDTO, SummaryStatDTO } from "../../types";
 import { createNote } from "./notes.service";
 
 /**
@@ -13,7 +12,7 @@ import { createNote } from "./notes.service";
  * @returns Summary generation response or null if topic doesn't exist or user has no access
  */
 export async function generateSummary(
-  supabase: SupabaseClient<Database>,
+  supabase: SupabaseClient,
   userId: string,
   topicId: string
 ): Promise<SummaryGenerationResponseDTO | null> {
@@ -72,4 +71,56 @@ export async function generateSummary(
     note_id: note.id,
     status: "processing",
   };
+}
+
+/**
+ * Accepts a generated summary.
+ *
+ * @param supabase - The Supabase client instance
+ * @param userId - The ID of the user accepting the summary
+ * @param summaryId - The ID of the summary to accept
+ * @returns The updated summary stat record or null if not found, not owned by user, or not a summary note
+ */
+export async function acceptSummary(
+  supabase: SupabaseClient,
+  userId: string,
+  summaryId: string
+): Promise<SummaryStatDTO | null> {
+  // Check if summary exists, belongs to user, and is linked to a summary note
+  const { data: existingSummary, error: fetchError } = await supabase
+    .from("summary_stats")
+    .select(
+      `
+      *,
+      notes:summary_note_id (
+        is_summary
+      )
+    `
+    )
+    .eq("id", summaryId)
+    .eq("user_id", userId)
+    .single();
+
+  if (fetchError || !existingSummary) {
+    return null;
+  }
+
+  // Verify that this is a summary note
+  if (!existingSummary.notes?.is_summary) {
+    return null;
+  }
+
+  // Update record, setting accepted = true
+  const { data: updatedSummary, error: updateError } = await supabase
+    .from("summary_stats")
+    .update({ accepted: true })
+    .eq("id", summaryId)
+    .select("*")
+    .single();
+
+  if (updateError) {
+    throw updateError;
+  }
+
+  return updatedSummary;
 }

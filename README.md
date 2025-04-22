@@ -409,6 +409,32 @@ curl -X POST 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174
 - 404 Not Found: Topic not found or access denied
 - 500 Internal Server Error: Server error
 
+#### PUT /api/summary/{id}/accept
+Accepts a generated summary, marking it as approved.
+
+```bash
+curl -X PUT 'http://localhost:3001/api/summary/123e4567-e89b-12d3-a456-426614174000/accept' \
+  -H 'Content-Type: application/json'
+```
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "topic_id": "uuid",
+  "note_id": "uuid",
+  "generated_at": "timestamp",
+  "accepted": true
+}
+```
+
+**Status Codes:**
+- 200 OK: Summary successfully accepted
+- 400 Bad Request: Invalid summary ID format or non-empty request body
+- 401 Unauthorized: User not authenticated
+- 404 Not Found: Summary not found or access denied
+- 500 Internal Server Error: Server error
+
 Note: All endpoints require appropriate CORS headers and handle OPTIONS requests for preflight checks. Error responses include appropriate HTTP status codes and error messages in the response body.
 
 ## TODO

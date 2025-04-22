@@ -61,11 +61,13 @@ export type PaginatedSummariesResponseDTO = PaginatedResponseDTO<NoteDTO>;
 // Extend Astro's Locals interface
 declare module "astro" {
   interface Locals {
-    supabase: SupabaseClient<Database>;
+    supabase: SupabaseClient;
     session: {
       user: {
         id: string;
-        [key: string]: any;
+        email?: string;
+        role?: string;
+        [key: string]: string | undefined;
       };
     } | null;
     request: Request;

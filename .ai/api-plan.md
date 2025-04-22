@@ -227,7 +227,7 @@
   - Success: 202 Accepted
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **PUT /summary/{id}/accept - TODO**
+- **PUT /summary/{id}/accept - DONE**
   - Description: Accept a generated summary
   - Response Body:
     ```json
