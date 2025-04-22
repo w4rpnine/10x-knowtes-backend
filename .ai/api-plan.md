@@ -166,7 +166,7 @@
   - Success: 201 Created
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **GET /notes/{id} - TODO / needed?**
+- **GET /notes/{id} - TODO**
   - Description: Get a specific note
   - Response Body:
     ```json
@@ -183,7 +183,7 @@
   - Success: 200 OK
   - Errors: 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **PUT /notes/{id} - TODO / needed?**
+- **PUT /notes/{id} - TODO**
   - Description: Update a note
   - Request Body:
     ```json
@@ -207,7 +207,7 @@
   - Success: 200 OK
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **DELETE /notes/{id} - TODO / needed?**
+- **DELETE /notes/{id} - TODO**
   - Description: Delete a note
   - Response: 204 No Content
   - Errors: 401 Unauthorized, 403 Forbidden, 404 Not Found
