@@ -10,3 +10,20 @@ export const createTopicSchema = z.object({
 });
 
 export type CreateTopicSchema = z.infer<typeof createTopicSchema>;
+
+// Define the exact shape we expect for update
+const titleSchema = z.string()
+  .min(1, 'Title is required')
+  .max(150, 'Title must be 150 characters or less')
+  .trim();
+
+export const updateTopicSchema = z.object({
+  title: titleSchema,
+});
+
+export type UpdateTopicSchema = {
+  title: string;
+};
+
+// UUID validation helper
+export const uuidSchema = z.string().uuid('Invalid topic ID');

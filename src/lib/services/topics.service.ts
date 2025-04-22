@@ -1,7 +1,6 @@
 import type { TopicDTO, PaginatedTopicsResponseDTO, CreateTopicCommand } from "../../types";
-import { supabaseClient } from "../../db/supabase.client";
+import type { SupabaseClient } from "../../db/supabase.client";
 import type { Database } from "../../db/database.types";
-import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Define a type for topic with notes from the database
 type TopicWithNotes = Database["public"]["Tables"]["topics"]["Row"] & {
@@ -21,7 +20,7 @@ export interface TopicsQueryParams {
  * @returns A paginated response containing topic data
  */
 export async function getTopics(
-  supabase: typeof supabaseClient,
+  supabase: SupabaseClient,
   userId: string,
   params: TopicsQueryParams
 ): Promise<PaginatedTopicsResponseDTO> {
@@ -73,7 +72,7 @@ export async function getTopics(
  * @returns The created topic as a DTO
  */
 export async function createTopic(
-  supabase: typeof supabaseClient,
+  supabase: SupabaseClient,
   userId: string,
   command: CreateTopicCommand
 ): Promise<TopicDTO> {
@@ -106,6 +105,10 @@ export async function getTopic(
   userId: string,
   topicId: string
 ): Promise<TopicDTO> {
+  if (!supabase) {
+    throw new Error("Supabase client is not initialized");
+  }
+
   const { data, error } = await supabase
     .from("topics")
     .select(`
@@ -121,6 +124,10 @@ export async function getTopic(
       throw new Error("Topic not found");
     }
     throw error;
+  }
+
+  if (!data) {
+    throw new Error("Topic not found");
   }
   
   return {

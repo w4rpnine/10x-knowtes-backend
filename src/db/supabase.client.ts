@@ -1,10 +1,14 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from '@supabase/supabase-js';
+import type { SupabaseClient as BaseSupabaseClient } from '@supabase/supabase-js';
+import type { Database } from './database.types';
 
-import type { Database } from "./database.types";
+export type SupabaseClient = BaseSupabaseClient<Database>;
 
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_KEY;
-
-export const supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
-
+// Default user ID for development/testing
 export const DEFAULT_USER_ID = "00000000-0000-4000-a000-000000000000";
+
+// Initialize the Supabase client
+export const supabaseClient = createClient<Database>(
+  import.meta.env.SUPABASE_URL,
+  import.meta.env.SUPABASE_KEY
+);

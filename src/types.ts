@@ -27,7 +27,7 @@ export interface CreateTopicCommand {
 }
 
 export interface UpdateTopicCommand {
-  title: string;
+  title: NonNullable<string>;
 }
 
 export interface CreateNoteCommand {

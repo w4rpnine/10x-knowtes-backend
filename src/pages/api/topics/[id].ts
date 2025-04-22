@@ -1,9 +1,13 @@
 import type { APIRoute } from "astro";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../../db/database.types";
+import type { UpdateTopicCommand } from '../../../types';
 import { z } from "zod";
 import { getTopic } from "../../../lib/services/topics.service";
 import { DEFAULT_USER_ID } from "../../../db/supabase.client";
+import { TopicService } from '../../../lib/services/topic.service';
+import { updateTopicSchema, uuidSchema } from '../../../lib/schemas/topic.schema';
+import type { UpdateTopicSchema } from '../../../lib/schemas/topic.schema';
 
 export const prerender = false;
 
@@ -13,14 +17,16 @@ const topicIdSchema = z.string().uuid("Topic ID must be a valid UUID");
 const commonHeaders = {
   "Content-Type": "application/json",
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "GET, PUT, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
 export const GET: APIRoute = async ({ params, locals }) => {
   try {
-    const { supabase } = locals as { supabase: SupabaseClient<Database> };
-    
+    const { supabase } = locals as { 
+      supabase: SupabaseClient<Database>
+    };
+
     // Validate topic ID parameter
     const topicId = params.id;
     const parseResult = topicIdSchema.safeParse(topicId);
@@ -36,7 +42,6 @@ export const GET: APIRoute = async ({ params, locals }) => {
     }
     
     try {
-      // Fetch topic with notes using DEFAULT_USER_ID
       const topic = await getTopic(
         supabase,
         DEFAULT_USER_ID,
@@ -63,6 +68,65 @@ export const GET: APIRoute = async ({ params, locals }) => {
       JSON.stringify({ error: "Internal server error" }),
       { status: 500, headers: commonHeaders }
     );
+  }
+};
+
+/**
+ * Updates an existing topic
+ * 
+ * @route PUT /topics/{id}
+ * @param {string} id - Topic UUID
+ * @body {object} requestBody - Topic update data
+ * @body {string} requestBody.title - New topic title (1-150 characters)
+ * 
+ * @returns {object} 200 - Updated topic object
+ * @returns {object} 400 - Validation error
+ * @returns {object} 401 - Unauthorized
+ * @returns {object} 403 - Forbidden
+ * @returns {object} 404 - Topic not found
+ * @returns {object} 500 - Internal server error
+ */
+export const PUT: APIRoute = async ({ params, request, locals }) => {
+  try {
+    // Validate topic ID
+    const topicId = await uuidSchema.parseAsync(params.id);
+    
+    // Get supabase client from locals
+    const { supabase } = locals as { 
+      supabase: SupabaseClient<Database> 
+    };
+
+    // Parse and validate request body
+    const body = await request.json();
+    const validatedData = await updateTopicSchema.parseAsync(body);
+    
+    // Update topic using the validated data
+    const topicService = new TopicService(supabase);
+    const updatedTopic = await topicService.updateTopic(
+      topicId, 
+      DEFAULT_USER_ID, 
+      { title: validatedData.title as string }
+    );
+
+    return new Response(JSON.stringify(updatedTopic), {
+      status: 200,
+      headers: commonHeaders
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      const status = error.message.includes('not found') ? 404 : 
+                    error.message.includes('access denied') ? 403 : 400;
+      
+      return new Response(JSON.stringify({ error: error.message }), {
+        status,
+        headers: commonHeaders
+      });
+    }
+    
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: commonHeaders
+    });
   }
 };
 
