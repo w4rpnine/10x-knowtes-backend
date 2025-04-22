@@ -1,6 +1,7 @@
 import type { TopicDTO, PaginatedTopicsResponseDTO, CreateTopicCommand } from "../../types";
 import { supabaseClient } from "../../db/supabase.client";
 import type { Database } from "../../db/database.types";
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Define a type for topic with notes from the database
 type TopicWithNotes = Database["public"]["Tables"]["topics"]["Row"] & {
@@ -90,4 +91,40 @@ export async function createTopic(
   }
 
   return data;
+}
+
+/**
+ * Retrieves a single topic with all its notes for a specific user
+ * @param supabase - The Supabase client instance
+ * @param userId - The ID of the user
+ * @param topicId - The ID of the topic to retrieve
+ * @returns The topic with all its notes as a DTO
+ * @throws Error if topic not found or database error occurs
+ */
+export async function getTopic(
+  supabase: SupabaseClient,
+  userId: string,
+  topicId: string
+): Promise<TopicDTO> {
+  const { data, error } = await supabase
+    .from("topics")
+    .select(`
+      *,
+      notes (*)
+    `)
+    .eq("id", topicId)
+    .eq("user_id", userId)
+    .single();
+  
+  if (error) {
+    if (error.code === "PGRST116") {
+      throw new Error("Topic not found");
+    }
+    throw error;
+  }
+  
+  return {
+    ...data,
+    notes: data.notes || []
+  };
 }
