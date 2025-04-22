@@ -1,5 +1,17 @@
-import type { Database } from "./db/database.types";
-import type { SupabaseClient } from "./db/supabase.client";
+import type { Database } from "../db/database.types";
+import type { SupabaseClient as BaseSupabaseClient } from "@supabase/supabase-js";
+
+// Define our SupabaseClient type
+export type SupabaseClient = BaseSupabaseClient<Database>;
+
+// User profile properties
+export interface UserProfile {
+  id: string;
+  email?: string;
+  full_name?: string;
+  avatar_url?: string;
+  updated_at?: string;
+}
 
 // Base entity types from database
 type TopicEntity = Database["public"]["Tables"]["topics"]["Row"];
@@ -57,17 +69,3 @@ export interface PaginatedResponseDTO<T> {
 export type PaginatedTopicsResponseDTO = PaginatedResponseDTO<TopicDTO>;
 export type PaginatedNotesResponseDTO = PaginatedResponseDTO<NoteDTO>;
 export type PaginatedSummariesResponseDTO = PaginatedResponseDTO<NoteDTO>;
-
-// Extend Astro's Locals interface
-declare module "astro" {
-  interface Locals {
-    supabase: SupabaseClient<Database>;
-    session: {
-      user: {
-        id: string;
-        [key: string]: any;
-      };
-    } | null;
-    request: Request;
-  }
-}

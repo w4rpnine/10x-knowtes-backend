@@ -1,7 +1,6 @@
-import type { NoteDTO, PaginatedNotesResponseDTO } from "../../types";
+import type { NoteDTO, PaginatedNotesResponseDTO, CreateNoteCommand } from "../../types";
 import type { SupabaseClient } from "../../db/supabase.client";
 import type { Database } from "../../db/database.types";
-import type { CreateNoteCommand } from "../../types";
 
 export interface NotesQueryParams {
   is_summary?: boolean;
@@ -103,4 +102,33 @@ export async function createNote(
   }
 
   return note;
+}
+
+export class NotesService {
+  constructor(private supabase: SupabaseClient<Database>) {}
+
+  async getNoteById(noteId: string, userId: string): Promise<NoteDTO | null> {
+    // Early validation of inputs
+    if (!noteId || !userId) {
+      throw new Error("Note ID and User ID are required");
+    }
+
+    // Query the database with user authorization check
+    const { data, error } = await this.supabase
+      .from("notes")
+      .select("*")
+      .eq("id", noteId)
+      .eq("user_id", userId)
+      .single();
+
+    // Handle database errors
+    if (error) {
+      if (error.code === "PGRST116") {
+        return null; // Note not found
+      }
+      throw error;
+    }
+
+    return data as NoteDTO;
+  }
 }

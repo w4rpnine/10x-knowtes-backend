@@ -12,6 +12,7 @@ A web application for creating, organizing, and generating AI-powered summaries 
 - [Project Status](#project-status)
 - [License](#license)
 - [API Endpoints](#api-endpoints)
+- [TODO](#todo)
 
 ## Project Description
 
@@ -358,3 +359,11 @@ curl -X POST 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174
 - 500 Internal Server Error: Server error
 
 Note: All endpoints require appropriate CORS headers and handle OPTIONS requests for preflight checks. Error responses include appropriate HTTP status codes and error messages in the response body.
+
+## TODO
+
+### Security & Performance
+- [ ] Implement rate limiting for API endpoints to prevent abuse
+  - Consider using Redis or similar for distributed rate limiting
+  - Apply rate limits per user and per IP address
+  - Add configurable limits for different endpoints
