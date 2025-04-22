@@ -78,7 +78,7 @@
   - Success: 200 OK
   - Errors: 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **PUT /topics/{id} - TODO**
+- **PUT /topics/{id} - DONE**
   - Description: Update a topic's details
   - Request Body:
     ```json
