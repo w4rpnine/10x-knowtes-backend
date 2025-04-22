@@ -30,9 +30,9 @@
               "id": "uuid",
               "title": "string",
               "content": "string",
+              "is_summary": "boolean",
               "created_at": "timestamp",
-              "updated_at": "timestamp",
-              "is_summary": "boolean"
+              "updated_at": "timestamp"
             }
           ]
         }
@@ -64,7 +64,7 @@
   - Success: 201 Created
   - Errors: 400 Bad Request, 401 Unauthorized
 
-- **GET /topics/{id} - TODO**
+- **GET /topics/{id} - DONE**
   - Description: Get a specific topic
   - Response Body:
     ```json
@@ -293,8 +293,6 @@ The application uses Supabase Authentication for handling user authentication. T
 1. **Note Management**:
    - Notes are always associated with a topic
    - Notes are formatted in Markdown
-   - Notes are returned nested within their parent topics in the GET /topics endpoint
-   - Notes can be queried independently through the notes endpoints
 
 2. **AI Summary Generation**:
    - Implemented as an synchronous process

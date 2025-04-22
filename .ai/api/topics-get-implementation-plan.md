@@ -1,7 +1,7 @@
 # API Endpoint Implementation Plan: GET /topics
 
 ## 1. Przegląd punktu końcowego
-Endpoint GET /topics umożliwia pobranie listy wszystkich tematów dla zalogowanego użytkownika wraz z powiązanymi notatkami, z opcjonalnym filtrowaniem i paginacją. Zapewnia dostęp do podstawowych metadanych tematów oraz wszystkich notatek pod każdym tematem.
+Endpoint GET /topics umożliwia pobranie listy wszystkich tematów dla zalogowanego użytkownika z opcjonalnym filtrowaniem i paginacją. Zapewnia dostęp do podstawowych metadanych tematów oraz wszystkich notatek przypisanych do każdego tematu.
 
 ## 2. Szczegóły żądania
 - Metoda HTTP: GET
@@ -45,9 +45,10 @@ type TopicsQueryParams = z.infer<typeof topicsQuerySchema>;
           "id": "uuid",
           "title": "string",
           "content": "string",
+          "is_summary": "boolean",
           "created_at": "timestamp",
           "updated_at": "timestamp",
-          "is_summary": "boolean"
+          "topic_id": "uuid"
         }
       ]
     }
@@ -64,10 +65,10 @@ type TopicsQueryParams = z.infer<typeof topicsQuerySchema>;
 ## 5. Przepływ danych
 1. Walidacja parametrów zapytania przy użyciu Zod
 2. Uwierzytelnienie użytkownika poprzez middleware Supabase
-3. Zapytanie do bazy danych o tematy użytkownika wraz z powiązanymi notatkami
+3. Zapytanie do bazy danych o tematy użytkownika wraz z ich notatkami
    - Zastosowanie paginacji (limit/offset)
-   - Dołączenie powiązanych notatek poprzez relację
-4. Konwersja danych encji do DTO z zagnieżdżonymi notatkami
+   - Dołączenie notatek poprzez relację w Supabase
+4. Konwersja danych encji do DTO
 5. Formatowanie odpowiedzi paginowanej
 6. Zwrócenie danych w formacie JSON
 
@@ -90,11 +91,9 @@ type TopicsQueryParams = z.infer<typeof topicsQuerySchema>;
 
 ## 8. Rozważania dotyczące wydajności
 - Paginacja: Ograniczenie liczby zwracanych rekordów
-- Indeksowanie: 
-  - Upewnienie się, że kolumna user_id jest zaindeksowana
-  - Indeksowanie relacji między tematami a notatkami
-- Selektywne pobieranie kolumn: Wybieranie tylko wymaganych kolumn z obu tabel
-- Optymalizacja zapytania JOIN: Monitorowanie wydajności zapytania z dołączonymi notatkami
+- Indeksowanie: Upewnienie się, że kolumny user_id i topic_id są zaindeksowane
+- Selektywne pobieranie kolumn: Wybieranie tylko wymaganych kolumn
+- Optymalizacja zapytań JOIN: Efektywne łączenie tematów z notatkami
 - Pamięć podręczna:
   - Rozważenie pamięci podręcznej po stronie klienta z nagłówkami Cache-Control
   - Potencjalne dodanie pamięci podręcznej po stronie serwera dla częstych zapytań
