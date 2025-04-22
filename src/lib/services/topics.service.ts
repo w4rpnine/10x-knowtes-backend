@@ -1,6 +1,7 @@
 import type { TopicDTO, PaginatedTopicsResponseDTO, CreateTopicCommand } from "../../types";
 import type { SupabaseClient } from "../../db/supabase.client";
 import type { Database } from "../../db/database.types";
+import { updateTopicSchema } from '../schemas/topic.schema';
 
 // Define a type for topic with notes from the database
 type TopicWithNotes = Database["public"]["Tables"]["topics"]["Row"] & {
@@ -134,4 +135,53 @@ export async function getTopic(
     ...data,
     notes: data.notes || []
   };
+}
+
+/**
+ * Updates an existing topic
+ * @param supabase - The Supabase client instance
+ * @param userId - The ID of the user
+ * @param topicId - The ID of the topic to update
+ * @param command - The command containing update data
+ * @returns The updated topic as a DTO
+ * @throws Error if topic not found, access denied, or update fails
+ */
+export async function updateTopic(
+  supabase: SupabaseClient,
+  userId: string,
+  topicId: string,
+  command: { title: string }
+): Promise<TopicDTO> {
+  // Validate the command
+  const validatedData = await updateTopicSchema.parseAsync({ title: command.title });
+
+  // Verify topic exists and user has access
+  const { data: existingTopic, error: fetchError } = await supabase
+    .from('topics')
+    .select()
+    .eq('id', topicId)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !existingTopic) {
+    throw new Error('Topic not found or access denied');
+  }
+
+  // Update the topic
+  const { data: updatedTopic, error: updateError } = await supabase
+    .from('topics')
+    .update({ 
+      title: validatedData.title,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', topicId)
+    .eq('user_id', userId)
+    .select()
+    .single();
+
+  if (updateError || !updatedTopic) {
+    throw new Error('Failed to update topic');
+  }
+
+  return updatedTopic;
 }

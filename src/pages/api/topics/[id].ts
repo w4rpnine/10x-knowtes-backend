@@ -3,9 +3,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "../../../db/database.types";
 import type { UpdateTopicCommand } from '../../../types';
 import { z } from "zod";
-import { getTopic } from "../../../lib/services/topics.service";
+import { getTopic, updateTopic } from "../../../lib/services/topics.service";
 import { DEFAULT_USER_ID } from "../../../db/supabase.client";
-import { TopicService } from '../../../lib/services/topic.service';
 import { updateTopicSchema, uuidSchema } from '../../../lib/schemas/topic.schema';
 import type { UpdateTopicSchema } from '../../../lib/schemas/topic.schema';
 
@@ -98,14 +97,14 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
 
     // Parse and validate request body
     const body = await request.json();
-    const validatedData = await updateTopicSchema.parseAsync(body);
+    const { title } = await updateTopicSchema.parseAsync(body) as { title: string };
     
     // Update topic using the validated data
-    const topicService = new TopicService(supabase);
-    const updatedTopic = await topicService.updateTopic(
-      topicId, 
-      DEFAULT_USER_ID, 
-      { title: validatedData.title as string }
+    const updatedTopic = await updateTopic(
+      supabase,
+      DEFAULT_USER_ID,
+      topicId,
+      { title }
     );
 
     return new Response(JSON.stringify(updatedTopic), {
