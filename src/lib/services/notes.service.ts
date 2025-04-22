@@ -105,15 +105,12 @@ export async function createNote(
 }
 
 export class NotesService {
-  constructor(private supabase: SupabaseClient) {}
+  constructor(private readonly supabase: SupabaseClient) {}
 
+  /**
+   * Gets a note by ID and verifies user ownership
+   */
   async getNoteById(noteId: string, userId: string): Promise<NoteDTO | null> {
-    // Early validation of inputs
-    if (!noteId || !userId) {
-      throw new Error("Note ID and User ID are required");
-    }
-
-    // Query the database with user authorization check
     const { data, error } = await this.supabase
       .from("notes")
       .select("*")
@@ -121,15 +118,15 @@ export class NotesService {
       .eq("user_id", userId)
       .single();
 
-    // Handle database errors
     if (error) {
+      // Handle "no rows returned" case
       if (error.code === "PGRST116") {
-        return null; // Note not found
+        return null;
       }
       throw error;
     }
 
-    return data as NoteDTO;
+    return data;
   }
 
   /**
@@ -175,5 +172,34 @@ export class NotesService {
     }
 
     return updatedNote as NoteDTO;
+  }
+
+  /**
+   * Deletes a note by ID
+   * @param noteId - The ID of the note to delete
+   * @param userId - The ID of the user who owns the note
+   * @returns true if deletion was successful, false if note not found
+   * @throws Error if deletion fails for database reasons
+   */
+  async deleteNote(noteId: string, userId: string): Promise<boolean> {
+    // Early validation
+    if (!noteId || !userId) {
+      throw new Error("Note ID and User ID are required");
+    }
+
+    // Check if note exists and belongs to user
+    const existingNote = await this.getNoteById(noteId, userId);
+    if (!existingNote) {
+      return false;
+    }
+
+    // Delete note
+    const { error } = await this.supabase.from("notes").delete().eq("id", noteId).eq("user_id", userId);
+
+    if (error) {
+      throw error;
+    }
+
+    return true;
   }
 }

@@ -207,7 +207,7 @@
   - Success: 200 OK
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **DELETE /notes/{id} - TODO**
+- **DELETE /notes/{id} - DONE**
   - Description: Delete a note
   - Response: 204 No Content
   - Errors: 401 Unauthorized, 403 Forbidden, 404 Not Found

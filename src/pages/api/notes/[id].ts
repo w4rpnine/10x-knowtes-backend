@@ -14,7 +14,7 @@ const paramsSchema = z.object({
 // CORS headers
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS, PUT",
+  "Access-Control-Allow-Methods": "GET, OPTIONS, PUT, DELETE",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
   "Content-Type": "application/json",
 };
@@ -173,6 +173,110 @@ export const PUT: APIRoute = async ({ params, locals, request }) => {
     });
   } catch (error) {
     console.error("Error updating note:", error);
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers: corsHeaders,
+    });
+  }
+};
+
+/**
+ * DELETE /notes/{id} - Deletes a note
+ *
+ * @description Deletes a note by ID. Requires user authentication.
+ * Only the note owner can delete it. Returns 204 No Content on success.
+ *
+ * @param {Object} context - Astro API route context
+ * @param {Object} context.params - Route parameters
+ * @param {string} context.params.id - UUID of the note to delete
+ * @param {Object} context.locals - Astro locals containing Supabase client
+ * @param {SupabaseClient} context.locals.supabase - Supabase client instance
+ * @param {Object} context.request - Request object for CORS handling
+ *
+ * @throws {400} - When note ID is invalid
+ * @throws {404} - When note doesn't exist or user doesn't have access
+ * @throws {500} - When an unexpected error occurs
+ *
+ * @returns {Promise<Response>} 204 No Content on success, error response otherwise
+ *
+ * @example
+ * // Success response:
+ * // Status: 204 No Content
+ * // No response body
+ *
+ * // Error response example:
+ * // Status: 404 Not Found
+ * {
+ *   "error": "Note not found"
+ * }
+ */
+export const DELETE: APIRoute = async ({ params, locals, request }) => {
+  const requestId = crypto.randomUUID();
+  const startTime = Date.now();
+
+  // Handle OPTIONS request for CORS
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders,
+    });
+  }
+
+  try {
+    console.log(`[${requestId}] DELETE /notes/${params.id} - Request started`);
+
+    // Validate note ID
+    const paramsResult = noteIdSchema.safeParse(params);
+    if (!paramsResult.success) {
+      return new Response(
+        JSON.stringify({
+          error: "Invalid note ID",
+          details: paramsResult.error.format(),
+        }),
+        {
+          status: 400,
+          headers: corsHeaders,
+        }
+      );
+    }
+
+    // Get Supabase client from locals
+    const { supabase } = locals;
+
+    // Delete note using service with DEFAULT_USER_ID
+    const notesService = new NotesService(supabase);
+    const deleted = await notesService.deleteNote(paramsResult.data.id, DEFAULT_USER_ID);
+
+    if (!deleted) {
+      const duration = Date.now() - startTime;
+      console.log(`[${requestId}] Note not found. Duration: ${duration}ms`);
+
+      return new Response(JSON.stringify({ error: "Note not found" }), {
+        status: 404,
+        headers: corsHeaders,
+      });
+    }
+
+    const duration = Date.now() - startTime;
+    console.log(`[${requestId}] Note deleted successfully. Duration: ${duration}ms`);
+
+    // Return 204 No Content for successful deletion
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders,
+    });
+  } catch (error) {
+    const duration = Date.now() - startTime;
+
+    console.error(
+      `[${requestId}] Error deleting note: ${error instanceof Error ? error.message : "Unknown error"}. Duration: ${duration}ms`,
+      {
+        error,
+        params,
+        duration,
+      }
+    );
+
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: corsHeaders,

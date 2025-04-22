@@ -366,6 +366,23 @@ curl -X PUT 'http://localhost:3001/api/notes/123e4567-e89b-12d3-a456-42661417400
 }
 ```
 
+#### DELETE /api/notes/{id}
+Deletes a specific note.
+
+```bash
+curl -X DELETE 'http://localhost:3001/api/notes/123e4567-e89b-12d3-a456-426614174000' \
+  -H 'Content-Type: application/json'
+```
+
+**Response:** 204 No Content
+
+**Status Codes:**
+- 204 No Content: Note successfully deleted
+- 400 Bad Request: Invalid note ID format
+- 401 Unauthorized: User not authenticated
+- 404 Not Found: Note not found or access denied
+- 500 Internal Server Error: Server error
+
 ### Summaries
 
 #### POST /api/topics/{topicId}/summary
