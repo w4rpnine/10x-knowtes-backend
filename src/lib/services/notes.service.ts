@@ -1,4 +1,4 @@
-import type { NoteDTO, PaginatedNotesResponseDTO, CreateNoteCommand } from "../../types";
+import type { NoteDTO, PaginatedNotesResponseDTO, CreateNoteCommand, UpdateNoteCommand } from "../../types";
 import type { SupabaseClient } from "../../db/supabase.client";
 import type { Database } from "../../db/database.types";
 
@@ -17,7 +17,7 @@ export interface NotesQueryParams {
  * @returns A paginated response containing note data
  */
 export async function getNotesByTopicId(
-  supabase: SupabaseClient<Database>,
+  supabase: SupabaseClient,
   userId: string,
   topicId: string,
   params: NotesQueryParams
@@ -67,7 +67,7 @@ export async function getNotesByTopicId(
  * @returns Utworzona notatka lub null jeśli temat nie istnieje lub użytkownik nie ma do niego dostępu
  */
 export async function createNote(
-  supabase: SupabaseClient<Database>,
+  supabase: SupabaseClient,
   userId: string,
   topicId: string,
   data: CreateNoteCommand
@@ -105,7 +105,7 @@ export async function createNote(
 }
 
 export class NotesService {
-  constructor(private supabase: SupabaseClient<Database>) {}
+  constructor(private supabase: SupabaseClient) {}
 
   async getNoteById(noteId: string, userId: string): Promise<NoteDTO | null> {
     // Early validation of inputs
@@ -130,5 +130,50 @@ export class NotesService {
     }
 
     return data as NoteDTO;
+  }
+
+  /**
+   * Updates an existing note
+   * @param noteId - The ID of the note to update
+   * @param userId - The ID of the user who owns the note
+   * @param data - The data to update the note with
+   * @returns The updated note or null if not found
+   */
+  async updateNote(noteId: string, userId: string, data: UpdateNoteCommand): Promise<NoteDTO | null> {
+    // Early validation
+    if (!noteId || !userId) {
+      throw new Error("Note ID and User ID are required");
+    }
+
+    // Check if note exists and belongs to user
+    const existingNote = await this.getNoteById(noteId, userId);
+    if (!existingNote) {
+      return null;
+    }
+
+    // Prepare update data
+    const updateData: Partial<NoteDTO> = {};
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.content !== undefined) updateData.content = data.content;
+
+    // Return existing note if no changes
+    if (Object.keys(updateData).length === 0) {
+      return existingNote;
+    }
+
+    // Update note
+    const { data: updatedNote, error } = await this.supabase
+      .from("notes")
+      .update(updateData)
+      .eq("id", noteId)
+      .eq("user_id", userId)
+      .select("*")
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    return updatedNote as NoteDTO;
   }
 }

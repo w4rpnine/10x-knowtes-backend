@@ -166,7 +166,7 @@
   - Success: 201 Created
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **GET /notes/{id} - TODO**
+- **GET /notes/{id} - DONE**
   - Description: Get a specific note
   - Response Body:
     ```json
@@ -183,7 +183,7 @@
   - Success: 200 OK
   - Errors: 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **PUT /notes/{id} - TODO**
+- **PUT /notes/{id} - DONE**
   - Description: Update a note
   - Request Body:
     ```json

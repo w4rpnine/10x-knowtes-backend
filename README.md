@@ -332,6 +332,40 @@ curl -X POST 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174
 }
 ```
 
+#### PUT /api/notes/{id}
+Updates an existing note.
+
+```bash
+curl -X PUT 'http://localhost:3001/api/notes/123e4567-e89b-12d3-a456-426614174000' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "Updated Note Title",
+    "content": "Updated note content in markdown format"
+  }'
+```
+
+**Request Body:**
+```json
+{
+  "title": "string", // Optional, 1-150 characters
+  "content": "string" // Optional, max 3000 characters
+}
+```
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "topic_id": "uuid",
+  "user_id": "uuid",
+  "title": "string",
+  "content": "string",
+  "is_summary": "boolean",
+  "created_at": "timestamp",
+  "updated_at": "timestamp"
+}
+```
+
 ### Summaries
 
 #### POST /api/topics/{topicId}/summary
