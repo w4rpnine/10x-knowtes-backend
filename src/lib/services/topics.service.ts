@@ -13,7 +13,7 @@ export interface TopicsQueryParams {
 }
 
 /**
- * Retrieves a paginated list of topics for a specific user
+ * Retrieves a paginated list of topics for a specific user. Topics contain all notes underneath them.
  * @param supabase - The Supabase client instance
  * @param userId - The ID of the user whose topics are being retrieved
  * @param params - Query parameters for pagination

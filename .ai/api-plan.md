@@ -11,8 +11,8 @@
 
 ### Topics
 
-- **GET /topics**
-  - Description: List all topics for the authenticated user
+- **GET /topics - DONE**
+  - Description: List all topics for the authenticated user, with all notes that are underneath them.
   - Query Parameters:
     - `limit` (optional): Maximum number of results to return (default: 50)
     - `offset` (optional): Offset for pagination (default: 0)
@@ -24,7 +24,14 @@
           "id": "uuid",
           "title": "string",
           "created_at": "timestamp",
-          "updated_at": "timestamp"
+          "updated_at": "timestamp",
+          "notes": [
+            {
+              "id": "uuid",
+              "title": "string",
+              "content": "string"
+            }
+          ]
         }
       ],
       "count": "integer",
@@ -34,7 +41,7 @@
   - Success: 200 OK
   - Errors: 401 Unauthorized
 
-- **POST /topics**
+- **POST /topics - DONE**
   - Description: Create a new topic
   - Request Body:
     ```json
@@ -54,7 +61,7 @@
   - Success: 201 Created
   - Errors: 400 Bad Request, 401 Unauthorized
 
-- **GET /topics/{id}**
+- **GET /topics/{id} - TODO**
   - Description: Get a specific topic
   - Response Body:
     ```json
@@ -68,7 +75,7 @@
   - Success: 200 OK
   - Errors: 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **PUT /topics/{id}**
+- **PUT /topics/{id} - TODO**
   - Description: Update a topic's details
   - Request Body:
     ```json
@@ -88,14 +95,14 @@
   - Success: 200 OK
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **DELETE /topics/{id}**
+- **DELETE /topics/{id} - TODO**
   - Description: Delete a topic and all its related notes (cascading delete)
   - Response: 204 No Content
   - Errors: 401 Unauthorized, 403 Forbidden, 404 Not Found
 
 ### Notes
 
-- **GET /topics/{topicId}/notes**
+- **GET /topics/{topicId}/notes - DONE**
   - Description: List all notes for a specific topic
   - Query Parameters:
     - `is_summary` (optional): Filter by summary status
@@ -122,7 +129,7 @@
   - Success: 200 OK
   - Errors: 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **POST /topics/{topicId}/notes**
+- **POST /topics/{topicId}/notes - DONE**
   - Description: Create a new note in a topic
   - Request Body:
     ```json
@@ -147,7 +154,7 @@
   - Success: 201 Created
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **GET /notes/{id}**
+- **GET /notes/{id} - TODO / needed?**
   - Description: Get a specific note
   - Response Body:
     ```json
@@ -164,7 +171,7 @@
   - Success: 200 OK
   - Errors: 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **PUT /notes/{id}**
+- **PUT /notes/{id} - TODO / needed?**
   - Description: Update a note
   - Request Body:
     ```json
@@ -188,14 +195,14 @@
   - Success: 200 OK
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **DELETE /notes/{id}**
+- **DELETE /notes/{id} - TODO / needed?**
   - Description: Delete a note
   - Response: 204 No Content
   - Errors: 401 Unauthorized, 403 Forbidden, 404 Not Found
 
 ### Summary Generation
 
-- **POST /topics/{topicId}/summary**
+- **POST /topics/{topicId}/summary - DONE**
   - Description: Generate a summary (as a note) for a topic's notes using AI
   - Response Body:
     ```json
@@ -208,7 +215,7 @@
   - Success: 202 Accepted
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **PUT /summary/{id}/accept**
+- **PUT /summary/{id}/accept - TODO**
   - Description: Accept a generated summary
   - Response Body:
     ```json
@@ -223,7 +230,7 @@
   - Success: 200 OK
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **PUT /summary-stats/{id}/reject**
+- **PUT /summary-stats/{id}/reject - TODO**
   - Description: Reject a generated summary
   - Response Body:
     ```json
@@ -281,7 +288,6 @@ The application uses Supabase Authentication for handling user authentication. T
 ### Business Logic Implementation
 
 1. **Note Management**:
-   - Automatic saving during editing is handled client-side with periodic PUT requests
    - Notes are always associated with a topic
    - Notes are formatted in Markdown
 
