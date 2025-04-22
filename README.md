@@ -142,10 +142,15 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## API Endpoints
 
-## Topics
+### Topics
 
-### GET /api/topics
+#### GET /api/topics
 Retrieves a list of topics for the user.
+
+```bash
+curl -X GET 'http://localhost:3001/api/topics?limit=10&offset=0' \
+  -H 'Content-Type: application/json'
+```
 
 **Query Parameters:**
 - `limit` (optional): Maximum number of results (default: 50)
@@ -168,13 +173,102 @@ Retrieves a list of topics for the user.
 }
 ```
 
-## Notes
+#### POST /api/topics
+Creates a new topic.
 
-### GET /api/topics/{topicId}/notes
+```bash
+curl -X POST 'http://localhost:3001/api/topics' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "My New Topic"
+  }'
+```
+
+**Request Body:**
+```json
+{
+  "title": "string" // 1-150 characters
+}
+```
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "user_id": "uuid",
+  "title": "string",
+  "created_at": "timestamp",
+  "updated_at": "timestamp"
+}
+```
+
+#### GET /api/topics/{id}
+Retrieves a specific topic by ID.
+
+```bash
+curl -X GET 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000' \
+  -H 'Content-Type: application/json'
+```
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "user_id": "uuid",
+  "title": "string",
+  "created_at": "timestamp",
+  "updated_at": "timestamp"
+}
+```
+
+#### PUT /api/topics/{id}
+Updates an existing topic.
+
+```bash
+curl -X PUT 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "Updated Topic Title"
+  }'
+```
+
+**Request Body:**
+```json
+{
+  "title": "string" // 1-150 characters
+}
+```
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "user_id": "uuid",
+  "title": "string",
+  "created_at": "timestamp",
+  "updated_at": "timestamp"
+}
+```
+
+#### DELETE /api/topics/{id}
+Deletes a topic and all its associated notes.
+
+```bash
+curl -X DELETE 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000' \
+  -H 'Content-Type: application/json'
+```
+
+**Response:** 204 No Content
+
+### Notes
+
+#### GET /api/topics/{topicId}/notes
 Retrieves a list of notes for a specific topic.
 
-**Path Parameters:**
-- `topicId`: Topic UUID
+```bash
+curl -X GET 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000/notes?is_summary=false&limit=10&offset=0' \
+  -H 'Content-Type: application/json'
+```
 
 **Query Parameters:**
 - `is_summary` (optional): Filter by summary flag (true/false)
@@ -201,11 +295,18 @@ Retrieves a list of notes for a specific topic.
 }
 ```
 
-### POST /api/topics/{topicId}/notes
+#### POST /api/topics/{topicId}/notes
 Creates a new note within a specified topic.
 
-**Path Parameters:**
-- `topicId`: Topic UUID
+```bash
+curl -X POST 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000/notes' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "My New Note",
+    "content": "Note content in markdown format",
+    "is_summary": false
+  }'
+```
 
 **Request Body:**
 ```json
@@ -230,8 +331,30 @@ Creates a new note within a specified topic.
 }
 ```
 
+### Summaries
+
+#### POST /api/topics/{topicId}/summary
+Generates an AI-powered summary for all notes in a topic.
+
+```bash
+curl -X POST 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000/summary' \
+  -H 'Content-Type: "application/json"'
+```
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "topic_id": "uuid",
+  "status": "string",
+  "created_at": "timestamp"
+}
+```
+
 **Status Codes:**
-- 201 Created: Note was successfully created
-- 400 Bad Request: Invalid input data
-- 404 Not Found: Topic does not exist
+- 202 Accepted: Summary generation started
+- 400 Bad Request: Invalid topic ID
+- 404 Not Found: Topic not found or access denied
 - 500 Internal Server Error: Server error
+
+Note: All endpoints require appropriate CORS headers and handle OPTIONS requests for preflight checks. Error responses include appropriate HTTP status codes and error messages in the response body.
