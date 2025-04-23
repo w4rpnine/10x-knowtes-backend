@@ -31,7 +31,8 @@ Endpoint służy do tworzenia nowych tematów (topics) w systemie. Tworzy nowy r
     "title": "string",
     "user_id": "uuid",
     "created_at": "timestamp",
-    "updated_at": "timestamp"
+    "updated_at": "timestamp",
+    "notes": []
   }
   ```
 - Kody błędów:
