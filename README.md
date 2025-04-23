@@ -27,7 +27,7 @@ The application supports students, professionals, researchers, and hobbyists in 
 ## Tech Stack
 
 ### Frontend
-- [Next.js 14](https://nextjs.org/)
+- [Next.js 15](https://nextjs.org/)
 - [React 19](https://react.dev/)
 - [TypeScript 5](https://www.typescriptlang.org/)
 - [Tailwind CSS 4](https://tailwindcss.com/)

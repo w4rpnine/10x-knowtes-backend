@@ -215,7 +215,7 @@
 ### Summary Generation
 
 - **POST /topics/{topicId}/summaries**
-  - Description: Generate a summary (as a note) for a topic's notes using AI
+  - Description: Generate a summary for a topic's notes using AI
   - Response Body:
     ```json
     {
