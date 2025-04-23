@@ -14,3 +14,11 @@ export const summaryGenerationResponseSchema = z.object({
 });
 
 export type SummaryGenerationResponse = z.infer<typeof summaryGenerationResponseSchema>;
+
+// Schema for summary accept endpoint parameters
+export const summaryAcceptParamsSchema = z.object({
+  topicId: z.string().uuid("Invalid topic ID format"),
+  summaryId: z.string().uuid("Invalid summary ID format"),
+});
+
+export type SummaryAcceptParams = z.infer<typeof summaryAcceptParamsSchema>;
