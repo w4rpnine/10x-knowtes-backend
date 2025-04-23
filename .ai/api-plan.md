@@ -214,47 +214,39 @@
 
 ### Summary Generation
 
-- **POST /topics/{topicId}/summary**
+- **POST /topics/{topicId}/summaries**
   - Description: Generate a summary (as a note) for a topic's notes using AI
   - Response Body:
     ```json
     {
       "summary_stat_id": "uuid",
-      "topic_id": "uuid",
-      "note_id": "uuid"
+      "title": "string",
+      "content": "string"
     }
     ```
-  - Success: 202 Accepted
+  - Success: 201 Created
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **PUT /summary/{id}/accept**
+- **PUT /topics/{topicId}/summaries/{summaryId}/accept**
   - Description: Accept a generated summary
   - Response Body:
     ```json
     {
-      "id": "uuid",
-      "topic_id": "uuid",
-      "note_id": "uuid",
-      "generated_at": "timestamp",
-      "accepted": true
+      "summary_stat_id": "uuid"
     }
     ```
-  - Success: 200 OK
+  - Success: 201 Created
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
-- **PUT /summary-stats/{id}/reject**
+- **PUT /topics/{topicId}/summaries/{summaryId}/reject**
   - Description: Reject a generated summary
   - Response Body:
     ```json
     {
-      "id": "uuid",
-      "topic_id": "uuid",
-      "note_id": null,
-      "generated_at": "timestamp",
-      "accepted": false
+      "summary_stat_id": "uuid"
     }
     ```
-  - Success: 200 OK
+  - Success: 204 No Content
   - Errors: 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found
 
 ## 3. Authentication and Authorization

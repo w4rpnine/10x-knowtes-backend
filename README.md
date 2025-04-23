@@ -18,9 +18,8 @@ A web application for creating, organizing, and generating AI-powered summaries 
 
 10x-knowtes is a web application that solves the problem of dispersed information across multiple notes by providing intelligent organization and AI-powered summaries. The application enables users to:
 
-- Create and organize notes in a hierarchical structure without nesting level limitations
-- Generate automatic summaries of topics using artificial intelligence
-- Create cross-references between related notes
+- Create and organize notes in a hierarchical structure
+- Generate automatic summaries of topics using artificial intelligenceś
 - Navigate through a clear and intuitive interface
 
 The application supports students, professionals, researchers, and hobbyists in effectively managing their notes from any field, making it easier to absorb knowledge and prepare for exams or certifications.
@@ -28,7 +27,7 @@ The application supports students, professionals, researchers, and hobbyists in 
 ## Tech Stack
 
 ### Frontend
-- [Astro 5](https://astro.build/)
+- [Next.js 14](https://nextjs.org/)
 - [React 19](https://react.dev/)
 - [TypeScript 5](https://www.typescriptlang.org/)
 - [Tailwind CSS 4](https://tailwindcss.com/)
@@ -146,10 +145,11 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ### Topics
 
 #### GET /api/topics
-Retrieves a list of topics for the user.
+Retrieves a list of topics with their associated notes.
 
 ```bash
-curl -X GET 'http://localhost:3001/api/topics?limit=10&offset=0' \
+curl -X GET 'http://localhost:3001/api/topics?limit=50&offset=0' \
+  -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json'
 ```
 
@@ -163,10 +163,19 @@ curl -X GET 'http://localhost:3001/api/topics?limit=10&offset=0' \
   "data": [
     {
       "id": "uuid",
-      "user_id": "uuid",
       "title": "string",
       "created_at": "timestamp",
-      "updated_at": "timestamp"
+      "updated_at": "timestamp",
+      "notes": [
+        {
+          "id": "uuid",
+          "title": "string",
+          "content": "string",
+          "is_summary": "boolean",
+          "created_at": "timestamp",
+          "updated_at": "timestamp"
+        }
+      ]
     }
   ],
   "count": "integer",
@@ -179,6 +188,7 @@ Creates a new topic.
 
 ```bash
 curl -X POST 'http://localhost:3001/api/topics' \
+  -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json' \
   -d '{
     "title": "My New Topic"
@@ -196,7 +206,6 @@ curl -X POST 'http://localhost:3001/api/topics' \
 ```json
 {
   "id": "uuid",
-  "user_id": "uuid",
   "title": "string",
   "created_at": "timestamp",
   "updated_at": "timestamp"
@@ -208,6 +217,7 @@ Retrieves a specific topic by ID.
 
 ```bash
 curl -X GET 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000' \
+  -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json'
 ```
 
@@ -215,7 +225,6 @@ curl -X GET 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-4266141740
 ```json
 {
   "id": "uuid",
-  "user_id": "uuid",
   "title": "string",
   "created_at": "timestamp",
   "updated_at": "timestamp"
@@ -227,6 +236,7 @@ Updates an existing topic.
 
 ```bash
 curl -X PUT 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000' \
+  -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json' \
   -d '{
     "title": "Updated Topic Title"
@@ -244,7 +254,6 @@ curl -X PUT 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-4266141740
 ```json
 {
   "id": "uuid",
-  "user_id": "uuid",
   "title": "string",
   "created_at": "timestamp",
   "updated_at": "timestamp"
@@ -256,6 +265,7 @@ Deletes a topic and all its associated notes.
 
 ```bash
 curl -X DELETE 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000' \
+  -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json'
 ```
 
@@ -267,12 +277,13 @@ curl -X DELETE 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-4266141
 Retrieves a list of notes for a specific topic.
 
 ```bash
-curl -X GET 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000/notes?is_summary=false&limit=10&offset=0' \
+curl -X GET 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000/notes?is_summary=false&limit=50&offset=0' \
+  -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json'
 ```
 
 **Query Parameters:**
-- `is_summary` (optional): Filter by summary flag (true/false)
+- `is_summary` (optional): Filter by summary flag
 - `limit` (optional): Maximum number of results (default: 50)
 - `offset` (optional): Offset for pagination (default: 0)
 
@@ -283,7 +294,6 @@ curl -X GET 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-4266141740
     {
       "id": "uuid",
       "topic_id": "uuid",
-      "user_id": "uuid",
       "title": "string",
       "content": "string",
       "is_summary": "boolean",
@@ -301,6 +311,7 @@ Creates a new note within a specified topic.
 
 ```bash
 curl -X POST 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000/notes' \
+  -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json' \
   -d '{
     "title": "My New Note",
@@ -314,7 +325,7 @@ curl -X POST 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174
 {
   "title": "string",
   "content": "string",
-  "is_summary": "boolean" // Optional, default is false
+  "is_summary": "boolean" // Optional, defaults to false
 }
 ```
 
@@ -323,7 +334,28 @@ curl -X POST 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174
 {
   "id": "uuid",
   "topic_id": "uuid",
-  "user_id": "uuid",
+  "title": "string",
+  "content": "string",
+  "is_summary": "boolean",
+  "created_at": "timestamp",
+  "updated_at": "timestamp"
+}
+```
+
+#### GET /api/notes/{id}
+Retrieves a specific note.
+
+```bash
+curl -X GET 'http://localhost:3001/api/notes/123e4567-e89b-12d3-a456-426614174000' \
+  -H 'Authorization: Bearer <token>' \
+  -H 'Content-Type: application/json'
+```
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "topic_id": "uuid",
   "title": "string",
   "content": "string",
   "is_summary": "boolean",
@@ -337,18 +369,19 @@ Updates an existing note.
 
 ```bash
 curl -X PUT 'http://localhost:3001/api/notes/123e4567-e89b-12d3-a456-426614174000' \
+  -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json' \
   -d '{
     "title": "Updated Note Title",
-    "content": "Updated note content in markdown format"
+    "content": "Updated note content"
   }'
 ```
 
 **Request Body:**
 ```json
 {
-  "title": "string", // Optional, 1-150 characters
-  "content": "string" // Optional, max 3000 characters
+  "title": "string", // Optional
+  "content": "string" // Optional
 }
 ```
 
@@ -357,7 +390,6 @@ curl -X PUT 'http://localhost:3001/api/notes/123e4567-e89b-12d3-a456-42661417400
 {
   "id": "uuid",
   "topic_id": "uuid",
-  "user_id": "uuid",
   "title": "string",
   "content": "string",
   "is_summary": "boolean",
@@ -371,97 +403,83 @@ Deletes a specific note.
 
 ```bash
 curl -X DELETE 'http://localhost:3001/api/notes/123e4567-e89b-12d3-a456-426614174000' \
+  -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json'
 ```
 
 **Response:** 204 No Content
 
-**Status Codes:**
-- 204 No Content: Note successfully deleted
-- 400 Bad Request: Invalid note ID format
-- 401 Unauthorized: User not authenticated
-- 404 Not Found: Note not found or access denied
-- 500 Internal Server Error: Server error
+### Summary Generation
 
-### Summaries
-
-#### POST /api/topics/{topicId}/summary
-Generates an AI-powered summary for all notes in a topic.
+#### POST /api/topics/{topicId}/summaries
+Generate a summary for a topic's notes using AI.
 
 ```bash
-curl -X POST 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000/summary' \
-  -H 'Content-Type: "application/json"'
-```
-
-**Response:**
-```json
-{
-  "id": "uuid",
-  "topic_id": "uuid",
-  "status": "string",
-  "created_at": "timestamp"
-}
-```
-
-**Status Codes:**
-- 202 Accepted: Summary generation started
-- 400 Bad Request: Invalid topic ID
-- 404 Not Found: Topic not found or access denied
-- 500 Internal Server Error: Server error
-
-#### PUT /api/summary/{id}/accept
-Accepts a generated summary, marking it as approved.
-
-```bash
-curl -X PUT 'http://localhost:3001/api/summary/123e4567-e89b-12d3-a456-426614174000/accept' \
+curl -X POST 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000/summaries' \
+  -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json'
 ```
 
 **Response:**
 ```json
 {
-  "id": "uuid",
-  "topic_id": "uuid",
-  "note_id": "uuid",
-  "generated_at": "timestamp",
-  "accepted": true
+  "summary_stat_id": "uuid",
+  "title": "string",
+  "content": "string"
 }
 ```
 
-**Status Codes:**
-- 200 OK: Summary successfully accepted
-- 400 Bad Request: Invalid summary ID format or non-empty request body
-- 401 Unauthorized: User not authenticated
-- 404 Not Found: Summary not found or access denied
-- 500 Internal Server Error: Server error
-
-#### PUT /api/summary/{id}/reject
-Rejects a generated summary, marking it as not approved.
+#### PUT /api/topics/{topicId}/summaries/{summaryId}/accept
+Accept a generated summary.
 
 ```bash
-curl -X PUT 'http://localhost:3001/api/summary/123e4567-e89b-12d3-a456-426614174000/reject' \
+curl -X PUT 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000/summaries/123e4567-e89b-12d3-a456-426614174000/accept' \
+  -H 'Authorization: Bearer <token>' \
   -H 'Content-Type: application/json'
 ```
 
 **Response:**
 ```json
 {
-  "id": "uuid",
-  "topic_id": "uuid",
-  "note_id": "uuid",
-  "generated_at": "timestamp",
-  "accepted": false
+  "summary_stat_id": "uuid"
 }
 ```
 
-**Status Codes:**
-- 200 OK: Summary successfully rejected
-- 400 Bad Request: Invalid summary ID format or non-empty request body
-- 401 Unauthorized: User not authenticated
-- 404 Not Found: Summary not found or access denied
-- 500 Internal Server Error: Server error
+#### PUT /api/topics/{topicId}/summaries/{summaryId}/reject
+Reject a generated summary.
 
-Note: All endpoints require appropriate CORS headers and handle OPTIONS requests for preflight checks. Error responses include appropriate HTTP status codes and error messages in the response body.
+```bash
+curl -X PUT 'http://localhost:3001/api/topics/123e4567-e89b-12d3-a456-426614174000/summaries/123e4567-e89b-12d3-a456-426614174000/reject' \
+  -H 'Authorization: Bearer <token>' \
+  -H 'Content-Type: application/json'
+```
+
+**Response:**
+```json
+{
+  "summary_stat_id": "uuid"
+}
+```
+
+### Error Responses
+
+All endpoints may return the following error status codes:
+
+- 400 Bad Request - Invalid request parameters or body
+- 401 Unauthorized - Missing or invalid authentication token
+- 403 Forbidden - User does not have permission to access the resource
+- 404 Not Found - Resource not found
+- 500 Internal Server Error - Server error
+
+Error responses will include a JSON body with an error message:
+
+```json
+{
+  "error": "Error message description"
+}
+```
+
+Note: All endpoints require JWT authentication via the Authorization header. The token must be included in the format: `Authorization: Bearer <token>`.
 
 ## TODO
 
