@@ -192,4 +192,87 @@ export class SummaryService {
       throw new APIError(`Transaction failed: ${error instanceof Error ? error.message : "Unknown error"}`, 500);
     }
   }
+
+  /**
+   * Rejects a generated summary for a topic
+   *
+   * Marks a summary as rejected by removing it from the database. This allows users
+   * to discard generated summaries they don't want to use.
+   *
+   * The operation performs these validation steps:
+   * 1. Verifies the topic exists and belongs to the user
+   * 2. Verifies the summary exists and belongs to the user
+   * 3. Ensures the summary belongs to the specified topic
+   * 4. Deletes the summary from the database
+   *
+   * @param _userId User ID (currently ignored, using DEFAULT_USER_ID for development)
+   * @param topicId Topic ID to identify the parent topic
+   * @param summaryId Summary stat ID to identify the summary to reject
+   * @returns Object containing the summary_stat_id of the rejected summary
+   * @throws APIError(404) If topic or summary not found
+   * @throws APIError(403) If user doesn't have access to topic or summary
+   * @throws APIError(400) If summary doesn't belong to topic
+   * @throws APIError(500) If database operations fail
+   */
+  async rejectSummary(_userId: string, topicId: string, summaryId: string): Promise<{ summary_stat_id: string }> {
+    // Using DEFAULT_USER_ID for development/testing
+    const userId = DEFAULT_USER_ID;
+
+    // 1. Verify topic exists and belongs to user
+    const { data: topic, error: topicError } = await this.supabase
+      .from("topics")
+      .select("id")
+      .eq("id", topicId)
+      .eq("user_id", userId)
+      .single();
+
+    if (topicError) {
+      if (topicError.code === "PGRST116") {
+        throw new APIError("Topic not found", 404);
+      }
+      throw new APIError(`Failed to fetch topic: ${topicError.message}`, 500);
+    }
+
+    if (!topic) {
+      throw new APIError("Topic not found or access denied", 403);
+    }
+
+    // 2. Verify summary stat exists and belongs to user
+    const { data: summaryStat, error: summaryStatError } = await this.supabase
+      .from("summary_stats")
+      .select("id, topic_id")
+      .eq("id", summaryId)
+      .eq("user_id", userId)
+      .single();
+
+    if (summaryStatError) {
+      if (summaryStatError.code === "PGRST116") {
+        throw new APIError("Summary not found", 404);
+      }
+      throw new APIError(`Failed to fetch summary: ${summaryStatError.message}`, 500);
+    }
+
+    if (!summaryStat) {
+      throw new APIError("Summary not found or access denied", 403);
+    }
+
+    // 3. Ensure the summary belongs to the specified topic
+    if (summaryStat.topic_id !== topicId) {
+      throw new APIError("Summary does not belong to the specified topic", 400);
+    }
+
+    // 4. Delete the summary stat record
+    const { error: deleteError } = await this.supabase
+      .from("summary_stats")
+      .delete()
+      .eq("id", summaryId)
+      .eq("user_id", userId);
+
+    if (deleteError) {
+      throw new APIError(`Failed to delete summary: ${deleteError.message}`, 500);
+    }
+
+    // 5. Return the summary stat ID
+    return { summary_stat_id: summaryId };
+  }
 }

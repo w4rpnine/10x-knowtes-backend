@@ -22,3 +22,11 @@ export const summaryAcceptParamsSchema = z.object({
 });
 
 export type SummaryAcceptParams = z.infer<typeof summaryAcceptParamsSchema>;
+
+// Schema for summary reject endpoint parameters
+export const summaryRejectParamsSchema = z.object({
+  topicId: z.string().uuid("Invalid topic ID format"),
+  summaryId: z.string().uuid("Invalid summary ID format"),
+});
+
+export type SummaryRejectParams = z.infer<typeof summaryRejectParamsSchema>;
