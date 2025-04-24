@@ -70,14 +70,12 @@ W ramach MVP (Minimum Viable Product) nie będą implementowane następujące fu
 
 ### Zarządzanie strukturą notatek
 
-#### US-001: Tworzenie hierarchii tematów
-Jako zalogowany użytkownik, chcę tworzyć hierarchiczną strukturę tematów, aby organizować moje notatki.
+#### US-001: Tworzenie tematów
+Jako zalogowany użytkownik, chcę tworzyć tematy, aby organizować moje notatki.
 
 Kryteria akceptacji:
 - Użytkownik może tworzyć nowe węzły (tematy) w strukturze
-- Użytkownik może tworzyć podtematy (podwęzły) w istniejących tematach
-- System wyświetla hierarchię tematów w formie drzewa po lewej stronie interfejsu
-- Nie ma ograniczenia na poziomy zagnieżdżenia tematów
+- System wyświetla tematy w formie drzewa po lewej stronie interfejsu
 - Użytkownik może nadać nazwę każdemu tematowi
 
 #### US-002: Edycja nazwy tematu
@@ -94,7 +92,7 @@ Jako zalogowany użytkownik, chcę usuwać tematy, które nie są mi już potrze
 Kryteria akceptacji:
 - Użytkownik może wybrać istniejący temat i usunąć go
 - System wyświetla ostrzeżenie przed usunięciem tematu zawierającego notatki lub podtematy
-- Po potwierdzeniu, temat i wszystkie zawarte w nim notatki i podtematy są usuwane
+- Po potwierdzeniu, temat i wszystkie zawarte w nim notatki są usuwane
 - System wyświetla potwierdzenie usunięcia tematu
 
 #### US-004: Nawigacja po strukturze tematów
@@ -103,7 +101,7 @@ Jako zalogowany użytkownik, chcę nawigować po strukturze tematów, aby łatwo
 Kryteria akceptacji:
 - Użytkownik może rozwijać i zwijać poszczególne gałęzie drzewa tematów
 - System wyświetla aktualną ścieżkę nawigacji (breadcrumb) na górze ekranu
-- Kliknięcie w temat powoduje wyświetlenie jego zawartości (podtematów i notatek)
+- Kliknięcie w temat powoduje wyświetlenie jego zawartości (notatek)
 
 ### Zarządzanie notatkami
 
@@ -114,7 +112,6 @@ Kryteria akceptacji:
 - Użytkownik może utworzyć nową notatkę w wybranym temacie
 - Użytkownik może nadać tytuł notatce
 - Użytkownik może wprowadzić treść notatki w formacie markdown
-- System automatycznie zapisuje notatkę podczas edycji
 - Nowa notatka pojawia się w strukturze wybranego tematu
 
 #### US-006: Edycja notatki
@@ -122,8 +119,6 @@ Jako zalogowany użytkownik, chcę edytować istniejące notatki, aby aktualizow
 
 Kryteria akceptacji:
 - Użytkownik może wybrać istniejącą notatkę i edytować jej tytuł oraz treść
-- System automatycznie zapisuje zmiany podczas edycji
-- Użytkownik może podejrzeć zmiany w czasie rzeczywistym
 - System zachowuje formatowanie markdown
 
 #### US-007: Usuwanie notatki
@@ -150,7 +145,6 @@ Jako zalogowany użytkownik, chcę generować podsumowania notatek z wybranego t
 
 Kryteria akceptacji:
 - Użytkownik może wybrać temat i zainicjować generowanie podsumowania
-- System informuje użytkownika o postępie generowania
 - Generowanie podsumowania nie trwa dłużej niż 30 sekund
 - Wygenerowane podsumowanie zawiera punkty kluczowe, daty, podsumowanie i listę pojęć
 - System wyświetla wygenerowane podsumowanie użytkownikowi
@@ -202,6 +196,23 @@ Kryteria akceptacji:
 - System wymaga potwierdzenia operacji przez podanie hasła
 - Po usunięciu konta, wszystkie dane użytkownika są trwale usuwane
 - System wyświetla potwierdzenie usunięcia konta
+
+### Uwierzytelnianie
+
+#### US-015: Bezpieczny dostęp i uwierzytelnianie
+
+- Tytuł: Bezpieczny dostęp
+- Opis: Jako użytkownik chcę mieć możliwość rejestracji i logowania się do systemu w sposób zapewniający bezpieczeństwo moich danych.
+- Kryteria akceptacji:
+  - Logowanie i rejestracja odbywają się na dedykowanych stronach.
+  - Logowanie wymaga podania adresu email i hasła.
+  - Rejestracja wymaga podania adresu email, hasła i potwierdzenia hasła.
+  - Użytkownik MOŻE zalogować się lub zarejestrować bez logowania się do systemu.
+  - Użytkownik NIE MOŻE korzystać z żadnych innych funkcji bez logowania się do systemu.
+  - Użytkownik może logować się do systemu poprzez przycisk w prawym górnym rogu.
+  - Użytkownik może się wylogować z systemu poprzez przycisk w prawym górnym rogu w głównym.
+  - Nie korzystamy z zewnętrznych serwisów logowania (np. Google, GitHub).
+  - Odzyskiwanie hasła powinno być możliwe.
 
 ## 6. Metryki sukcesu
 
