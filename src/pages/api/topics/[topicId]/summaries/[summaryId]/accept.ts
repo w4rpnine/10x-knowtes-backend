@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { SummaryService } from "../../../../../../lib/services/summary.service";
-import { handleAPIError } from "../../../../../../lib/utils/error-handling";
-import { summaryAcceptParamsSchema } from "../../../../../../lib/schemas/summary.schema";
+import { handleAPIError, APIError } from "../../../../../../lib/utils/error-handling";
+import { summaryAcceptParamsSchema, summaryContentSchema } from "../../../../../../lib/schemas/summary.schema";
 import { DEFAULT_USER_ID } from "../../../../../../db/supabase.client";
 
 export const prerender = false;
@@ -34,6 +34,13 @@ export const PUT: APIRoute = async (context) => {
 
     const userId = DEFAULT_USER_ID;
 
+    // 1. Get and validate request body
+    const body = await context.request.json().catch(() => {
+      throw new APIError("Invalid JSON in request body", 400);
+    });
+
+    const summary = summaryContentSchema.parse(body);
+
     // 2. Validate URL parameters
     const params = summaryAcceptParamsSchema.parse({
       topicId: context.params.topicId,
@@ -42,7 +49,7 @@ export const PUT: APIRoute = async (context) => {
 
     // 3. Create service and accept summary
     const summaryService = new SummaryService(context.locals.supabase);
-    const result = await summaryService.acceptSummary(userId, params.topicId, params.summaryId);
+    const result = await summaryService.acceptSummary(userId, params.topicId, params.summaryId, summary);
 
     // 4. Return success response
     return new Response(JSON.stringify(result), {

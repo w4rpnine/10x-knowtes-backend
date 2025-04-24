@@ -15,6 +15,14 @@ export const summaryGenerationResponseSchema = z.object({
 
 export type SummaryGenerationResponse = z.infer<typeof summaryGenerationResponseSchema>;
 
+// Schema for summary content
+export const summaryContentSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  content: z.string().min(1, "Content is required"),
+});
+
+export type SummaryContent = z.infer<typeof summaryContentSchema>;
+
 // Schema for summary accept endpoint parameters
 export const summaryAcceptParamsSchema = z.object({
   topicId: z.string().uuid("Invalid topic ID format"),
