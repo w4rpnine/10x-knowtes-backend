@@ -271,16 +271,7 @@ export class SummaryService {
       throw new APIError("Summary does not belong to the specified topic", 400);
     }
 
-    // 4. Delete the summary stat record
-    const { error: deleteError } = await this.supabase
-      .from("summary_stats")
-      .delete()
-      .eq("id", summaryId)
-      .eq("user_id", userId);
-
-    if (deleteError) {
-      throw new APIError(`Failed to delete summary: ${deleteError.message}`, 500);
-    }
+    // 4. In future, there will be additional logic to reject the summary
 
     // 5. Return the summary stat ID
     return { summary_stat_id: summaryId };
