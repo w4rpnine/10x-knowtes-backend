@@ -214,6 +214,67 @@ Kryteria akceptacji:
   - Nie korzystamy z zewnętrznych serwisów logowania (np. Google, GitHub).
   - Odzyskiwanie hasła powinno być możliwe.
 
+#### US-016: Rejestracja konta
+
+- Tytuł: Rejestracja nowego konta
+- Opis: Jako nowy użytkownik, chcę móc utworzyć konto w systemie, aby korzystać z funkcjonalności aplikacji.
+- Kryteria akceptacji:
+  - Użytkownik ma dostęp do formularza rejestracji na stronie dedykowanej do tego celu
+  - Formularz wymaga podania adresu email, hasła i potwierdzenia hasła
+  - System weryfikuje, czy adres email jest poprawny i unikalny
+  - System weryfikuje, czy hasło spełnia minimalne wymagania bezpieczeństwa (min. 8 znaków, co najmniej jedna wielka litera, mała litera i cyfra)
+  - System weryfikuje, czy hasło i potwierdzenie są identyczne
+  - Po pomyślnej rejestracji, użytkownik otrzymuje komunikat o potrzebie weryfikacji konta przez email
+  - System wysyła email z linkiem aktywacyjnym na podany adres
+  - Po kliknięciu w link, konto zostaje aktywowane i użytkownik może się zalogować
+
+#### US-017: Logowanie do systemu
+
+- Tytuł: Logowanie do systemu
+- Opis: Jako zarejestrowany użytkownik, chcę móc zalogować się do systemu, aby korzystać z funkcjonalności aplikacji.
+- Kryteria akceptacji:
+  - Użytkownik ma dostęp do formularza logowania na stronie dedykowanej do tego celu
+  - Formularz wymaga podania adresu email i hasła
+  - System weryfikuje poprawność danych logowania
+  - W przypadku niepoprawnych danych, użytkownik otrzymuje odpowiedni komunikat
+  - Po poprawnym zalogowaniu, użytkownik jest przekierowywany na stronę główną aplikacji
+  - Sesja użytkownika jest utrzymywana przez okres 30 dni lub do momentu wylogowania
+  - Użytkownik ma możliwość zaznaczenia opcji "Zapamiętaj mnie", aby przedłużyć czas trwania sesji
+
+#### US-018: Wylogowanie z systemu
+
+- Tytuł: Wylogowanie z systemu
+- Opis: Jako zalogowany użytkownik, chcę móc wylogować się z systemu, aby zabezpieczyć moje konto przed nieautoryzowanym dostępem.
+- Kryteria akceptacji:
+  - Zalogowany użytkownik widzi przycisk wylogowania w prawym górnym rogu aplikacji
+  - Po kliknięciu przycisku, użytkownik jest natychmiast wylogowywany
+  - Po wylogowaniu, użytkownik jest przekierowywany na stronę logowania
+  - Sesja użytkownika jest usuwana z przeglądarki
+  - Użytkownik otrzymuje potwierdzenie wylogowania
+
+#### US-019: Resetowanie hasła
+
+- Tytuł: Resetowanie zapomnianego hasła
+- Opis: Jako użytkownik, który zapomniał hasła, chcę móc zresetować hasło, aby odzyskać dostęp do mojego konta.
+- Kryteria akceptacji:
+  - Użytkownik ma dostęp do funkcji "Zapomniałem hasła" na stronie logowania
+  - Po kliknięciu w link, użytkownik jest przekierowany na stronę, gdzie może podać swój adres email
+  - System wysyła email z unikalnym, czasowo ograniczonym linkiem do resetowania hasła
+  - Link przekierowuje użytkownika do formularza, gdzie może ustawić nowe hasło
+  - System weryfikuje, czy nowe hasło spełnia minimalne wymagania bezpieczeństwa
+  - Po pomyślnej zmianie hasła, użytkownik otrzymuje potwierdzenie i jest przekierowywany na stronę logowania
+  - Użytkownik może zalogować się przy użyciu nowego hasła
+
+#### US-020: Pobieranie informacji o profilu
+
+- Tytuł: Dostęp do informacji o profilu
+- Opis: Jako zalogowany użytkownik, chcę mieć dostęp do informacji o moim profilu, aby móc zweryfikować moje dane.
+- Kryteria akceptacji:
+  - Zalogowany użytkownik ma dostęp do sekcji profilu
+  - System wyświetla adres email użytkownika
+  - System wyświetla datę utworzenia konta
+  - Użytkownik może zobaczyć podstawowe statystyki swojej aktywności (np. liczba utworzonych notatek)
+
 ## 6. Metryki sukcesu
 
 ### 6.1 Metryki produktowe
