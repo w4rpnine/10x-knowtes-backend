@@ -58,6 +58,26 @@ export type PaginatedTopicsResponseDTO = PaginatedResponseDTO<TopicDTO>;
 export type PaginatedNotesResponseDTO = PaginatedResponseDTO<NoteDTO>;
 export type PaginatedSummariesResponseDTO = PaginatedResponseDTO<NoteDTO>;
 
+// Auth related types
+export interface LoginCommand {
+  email: string;
+  password: string;
+  remember_me?: boolean;
+}
+
+export interface UserDTO {
+  id: string;
+  email: string;
+  created_at: string;
+}
+
+export interface LoginResponseDTO {
+  access_token: string;
+  refresh_token: string;
+  user: UserDTO;
+  expires_at: string;
+}
+
 // Extend Astro's Locals interface
 declare module "astro" {
   interface Locals {
