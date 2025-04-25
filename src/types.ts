@@ -78,6 +78,17 @@ export interface LoginResponseDTO {
   expires_at: string;
 }
 
+export interface RegisterCommand {
+  email: string;
+  password: string;
+  password_confirmation: string;
+}
+
+export interface RegisterResponseDTO {
+  user: UserDTO;
+  message: string;
+}
+
 // Extend Astro's Locals interface
 declare module "astro" {
   interface Locals {
