@@ -253,11 +253,127 @@
 
 The application uses Supabase Authentication for handling user authentication. The approach includes:
 
+### Auth Endpoints
+
+- **POST /auth/login**
+  - Description: Authenticate a user and issue JWT tokens
+  - Request Body:
+    ```json
+    {
+      "email": "string",
+      "password": "string",
+      "remember_me": "boolean" // Optional, defaults to false
+    }
+    ```
+  - Response Body:
+    ```json
+    {
+      "access_token": "string",
+      "refresh_token": "string",
+      "user": {
+        "id": "uuid",
+        "email": "string",
+        "created_at": "timestamp"
+      },
+      "expires_at": "timestamp"
+    }
+    ```
+  - Success: 200 OK
+  - Errors: 
+    - 400 Bad Request - Invalid email format
+    - 401 Unauthorized - Invalid credentials
+    - 500 Internal Server Error - Server error during authentication
+
+- **POST /auth/register**
+  - Description: Register a new user account
+  - Request Body:
+    ```json
+    {
+      "email": "string",
+      "password": "string",
+      "password_confirmation": "string"
+    }
+    ```
+  - Response Body:
+    ```json
+    {
+      "user": {
+        "id": "uuid",
+        "email": "string",
+        "created_at": "timestamp"
+      },
+      "message": "Verification email sent"
+    }
+    ```
+  - Success: 201 Created
+  - Errors: 
+    - 400 Bad Request - Invalid email format, password doesn't meet requirements, or passwords don't match
+    - 409 Conflict - Email already in use
+    - 500 Internal Server Error - Server error during registration
+
+- **POST /auth/logout**
+  - Description: Invalidate the user's session
+  - Request Body: None
+  - Response Body:
+    ```json
+    {
+      "message": "Successfully logged out"
+    }
+    ```
+  - Success: 200 OK
+  - Errors: 
+    - 401 Unauthorized - Not authenticated
+    - 500 Internal Server Error - Server error during logout
+
+- **POST /auth/password/reset**
+  - Description: Request a password reset email
+  - Request Body:
+    ```json
+    {
+      "email": "string"
+    }
+    ```
+  - Response Body:
+    ```json
+    {
+      "message": "Password reset email sent"
+    }
+    ```
+  - Success: 200 OK
+  - Errors: 
+    - 400 Bad Request - Invalid email format
+    - 500 Internal Server Error - Server error during password reset request
+
+- **POST /auth/password/update**
+  - Description: Update password with reset token
+  - Request Body:
+    ```json
+    {
+      "token": "string",
+      "password": "string",
+      "password_confirmation": "string"
+    }
+    ```
+  - Response Body:
+    ```json
+    {
+      "message": "Password updated successfully"
+    }
+    ```
+  - Success: 200 OK
+  - Errors: 
+    - 400 Bad Request - Invalid token, password doesn't meet requirements, or passwords don't match
+    - 401 Unauthorized - Expired or invalid token
+    - 500 Internal Server Error - Server error during password update
+
+### Authentication Mechanisms
+
 1. **JWT-based Authentication**:
    - Each API request must include a valid JWT token in the Authorization header
    - Format: `Authorization: Bearer <token>`
    - Tokens are issued upon successful login/signup
    - The token contains user identity information
+   - Session duration is 30 days by default, extended when "Remember me" option is selected
 
 2. **Row Level Security (RLS)**:
    - Database-level security using Supabase RLS policies
