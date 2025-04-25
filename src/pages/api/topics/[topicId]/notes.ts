@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { getNotesByTopicId } from "../../../../lib/services/notes.service";
-import { DEFAULT_USER_ID, supabaseClient } from "../../../../db/supabase.client";
+import { supabaseClient } from "../../../../db/supabase.client";
 import { getNotesQuerySchema, topicIdSchema } from "../../../../lib/schemas/notes.schema";
 import { fromZodError } from "zod-validation-error";
 import { createNoteSchema } from "../../../../lib/schemas/note.schema";
@@ -21,8 +21,17 @@ export const prerender = false;
  *
  * Returns paginated list of notes that belong to the specified topic
  */
-export const GET: APIRoute = async ({ params, request }) => {
+export const GET: APIRoute = async ({ params, request, locals }) => {
   try {
+    if (!locals.session?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const userId = locals.session.user.id;
+
     // Validate topicId parameter
     const { topicId } = params;
 
@@ -76,7 +85,7 @@ export const GET: APIRoute = async ({ params, request }) => {
       .from("topics")
       .select("id")
       .eq("id", topicId)
-      .eq("user_id", DEFAULT_USER_ID)
+      .eq("user_id", userId)
       .single();
 
     if (topicError) {
@@ -91,12 +100,7 @@ export const GET: APIRoute = async ({ params, request }) => {
     }
 
     // Get notes for the topic
-    const notesResponse = await getNotesByTopicId(
-      supabaseClient,
-      DEFAULT_USER_ID,
-      topicIdValidation.data,
-      queryValidation.data
-    );
+    const notesResponse = await getNotesByTopicId(supabaseClient, userId, topicIdValidation.data, queryValidation.data);
 
     // Return notes
     return new Response(JSON.stringify(notesResponse), {
@@ -114,8 +118,15 @@ export const GET: APIRoute = async ({ params, request }) => {
 };
 
 export const POST: APIRoute = async ({ request, params, locals }) => {
-  const supabase = locals.supabase;
+  if (!locals.session?.user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
+  const userId = locals.session.user.id;
+  const supabase = locals.supabase;
   const topicId = params.topicId;
 
   if (!topicId) {
@@ -141,7 +152,7 @@ export const POST: APIRoute = async ({ request, params, locals }) => {
     }
 
     // Utworzenie notatki
-    const note = await createNote(supabase, DEFAULT_USER_ID, topicId, validatedData.data);
+    const note = await createNote(supabase, userId, topicId, validatedData.data);
 
     if (!note) {
       return new Response(JSON.stringify({ error: "Topic not found or access denied" }), {

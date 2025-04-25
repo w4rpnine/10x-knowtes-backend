@@ -1,8 +1,7 @@
 import type { APIRoute } from "astro";
 import { SummaryService } from "../../../../../../lib/services/summary.service";
-import { handleAPIError } from "../../../../../../lib/utils/error-handling";
+import { handleAPIError, APIError } from "../../../../../../lib/utils/error-handling";
 import { summaryRejectParamsSchema } from "../../../../../../lib/schemas/summary.schema";
-import { DEFAULT_USER_ID } from "../../../../../../db/supabase.client";
 
 export const prerender = false;
 
@@ -14,7 +13,7 @@ export const prerender = false;
  * which removes the summary from consideration without creating a note from it.
  *
  * Authorization:
- * - Requires authentication (currently using DEFAULT_USER_ID for development)
+ * - Requires authentication
  * - User must own the topic and summary
  *
  * Path Parameters:
@@ -37,15 +36,11 @@ export const prerender = false;
  */
 export const PUT: APIRoute = async (context) => {
   try {
-    // For development purposes, we're using DEFAULT_USER_ID and skipping auth check
-    // In production, uncomment the following:
-    // requireAuth(context);
-    // const userId = context.locals.session?.user.id;
-    // if (!userId) {
-    //   throw new APIError("User ID is required", 401);
-    // }
+    if (!context.locals.session?.user) {
+      throw new APIError("Unauthorized", 401);
+    }
 
-    const userId = DEFAULT_USER_ID;
+    const userId = context.locals.session.user.id;
 
     // Validate URL parameters
     const params = summaryRejectParamsSchema.parse({

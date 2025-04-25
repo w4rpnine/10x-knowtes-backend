@@ -1,14 +1,12 @@
 import type { APIRoute } from "astro";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "../../../db/database.types";
-import { z } from "zod";
 import { getTopic, updateTopic, deleteTopic } from "../../../lib/services/topics.service";
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 import { updateTopicSchema } from "../../../lib/schemas/topic.schema";
-import { uuidSchema } from "../../../lib/schemas/topic.schema";
+import { fromZodError } from "zod-validation-error";
+import { z } from "zod";
 
 export const prerender = false;
 
+// Define topic ID schema here since it's not exported from topic.schema.ts
 const topicIdSchema = z.string().uuid("Topic ID must be a valid UUID");
 
 // Common headers for all responses
@@ -19,180 +17,210 @@ const commonHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
+/**
+ * GET /api/topics/{id} - Retrieves a single topic by ID
+ *
+ * Route parameters:
+ * - id: UUID of the topic to retrieve
+ *
+ * Returns topic if found and belongs to user
+ */
 export const GET: APIRoute = async ({ params, locals }) => {
   try {
-    const { supabase } = locals as {
-      supabase: SupabaseClient<Database>;
-    };
-
-    // Validate topic ID parameter
-    const topicId = params.id;
-    if (!topicId) {
-      return new Response(JSON.stringify({ error: "Topic ID is required" }), { status: 400, headers: commonHeaders });
+    if (!locals.session?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
-    const parseResult = topicIdSchema.safeParse(topicId);
+    const userId = locals.session.user.id;
+    const supabase = locals.supabase;
 
-    if (!parseResult.success) {
+    // Validate topic ID
+    const { id: topicId } = params;
+    if (!topicId) {
+      return new Response(JSON.stringify({ error: "Topic ID is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const validationResult = topicIdSchema.safeParse(topicId);
+    if (!validationResult.success) {
       return new Response(
         JSON.stringify({
-          error: "Invalid topic ID format",
-          details: parseResult.error.format(),
+          error: "Invalid topic ID",
+          details: fromZodError(validationResult.error).message,
         }),
-        { status: 400, headers: commonHeaders }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    try {
-      const topic = await getTopic(supabase, DEFAULT_USER_ID, topicId);
+    // Get topic
+    const topic = await getTopic(supabase, userId, validationResult.data);
 
-      return new Response(JSON.stringify(topic), { status: 200, headers: commonHeaders });
-    } catch (error) {
-      if (error instanceof Error && error.message === "Topic not found") {
-        return new Response(JSON.stringify({ error: "Topic not found" }), { status: 404, headers: commonHeaders });
-      }
-      throw error;
+    if (!topic) {
+      return new Response(JSON.stringify({ error: "Topic not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
     }
+
+    return new Response(JSON.stringify(topic), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error("Error fetching topic:", error);
 
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers: commonHeaders });
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };
 
 /**
- * Updates an existing topic
+ * PUT /api/topics/{id} - Updates a topic
  *
- * @route PUT /topics/{id}
- * @param {string} id - Topic UUID
- * @body {object} requestBody - Topic update data
- * @body {string} requestBody.title - New topic title (1-150 characters)
+ * Route parameters:
+ * - id: UUID of the topic to update
  *
- * @returns {object} 200 - Updated topic object
- * @returns {object} 400 - Validation error
- * @returns {object} 401 - Unauthorized
- * @returns {object} 403 - Forbidden
- * @returns {object} 404 - Topic not found
- * @returns {object} 500 - Internal server error
+ * Request body:
+ * - title: New title for the topic
+ *
+ * Returns updated topic
  */
 export const PUT: APIRoute = async ({ params, request, locals }) => {
   try {
-    // Validate topic ID
-    const topicId = await uuidSchema.parseAsync(params.id);
-
-    // Get supabase client from locals
-    const { supabase } = locals as {
-      supabase: SupabaseClient<Database>;
-    };
-
-    // Parse and validate request body
-    const body = await request.json();
-    const { title } = (await updateTopicSchema.parseAsync(body)) as { title: string };
-
-    // Update topic using the validated data
-    const updatedTopic = await updateTopic(supabase, DEFAULT_USER_ID, topicId, { title });
-
-    return new Response(JSON.stringify(updatedTopic), {
-      status: 200,
-      headers: commonHeaders,
-    });
-  } catch (error) {
-    if (error instanceof Error) {
-      const status = error.message.includes("not found") ? 404 : error.message.includes("access denied") ? 403 : 400;
-
-      return new Response(JSON.stringify({ error: error.message }), {
-        status,
-        headers: commonHeaders,
+    if (!locals.session?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
       });
     }
 
+    const userId = locals.session.user.id;
+    const supabase = locals.supabase;
+
+    // Validate topic ID
+    const { id: topicId } = params;
+    if (!topicId) {
+      return new Response(JSON.stringify({ error: "Topic ID is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const validationResult = topicIdSchema.safeParse(topicId);
+    if (!validationResult.success) {
+      return new Response(
+        JSON.stringify({
+          error: "Invalid topic ID",
+          details: fromZodError(validationResult.error).message,
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Parse and validate request body
+    const body = await request.json();
+    const validateResult = updateTopicSchema.safeParse(body);
+
+    if (!validateResult.success) {
+      return new Response(
+        JSON.stringify({
+          error: "Validation failed",
+          details: fromZodError(validateResult.error).message,
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const { title } = validateResult.data;
+
+    // Update topic
+    const updatedTopic = await updateTopic(supabase, userId, validationResult.data, { title });
+
+    if (!updatedTopic) {
+      return new Response(JSON.stringify({ error: "Topic not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify(updatedTopic), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Error updating topic:", error);
+
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
-      headers: commonHeaders,
+      headers: { "Content-Type": "application/json" },
     });
   }
 };
 
 /**
- * Deletes a topic and all related notes
+ * DELETE /api/topics/{id} - Deletes a topic
  *
- * @route DELETE /topics/{id}
- * @param {string} id - Topic UUID
+ * Route parameters:
+ * - id: UUID of the topic to delete
  *
- * @returns {object} 204 - No Content on successful deletion
- * @returns {object} 400 - Invalid UUID format
- * @returns {object} 401 - Unauthorized
- * @returns {object} 403 - Forbidden
- * @returns {object} 404 - Topic not found
- * @returns {object} 500 - Internal server error
+ * Returns no content on success
  */
 export const DELETE: APIRoute = async ({ params, locals }) => {
-  const startTime = Date.now();
-  const requestId = crypto.randomUUID();
-
   try {
-    console.log(`[${requestId}] DELETE /topics/${params.id} - Request started`);
-
-    // Validate topic ID
-    const topicId = await topicIdSchema.parseAsync(params.id);
-    console.log(`[${requestId}] Topic ID validation passed: ${topicId}`);
-
-    // Get supabase client from locals
-    const { supabase } = locals as {
-      supabase: SupabaseClient<Database>;
-    };
-
-    // Delete topic
-    await deleteTopic(
-      supabase,
-      DEFAULT_USER_ID, // In future, this should be replaced with authenticated user ID
-      topicId
-    );
-
-    const duration = Date.now() - startTime;
-    console.log(`[${requestId}] Topic deleted successfully. Duration: ${duration}ms`);
-
-    // Return 204 No Content for successful deletion
-    return new Response(null, {
-      status: 204,
-      headers: commonHeaders,
-    });
-  } catch (error) {
-    const duration = Date.now() - startTime;
-
-    if (error instanceof Error) {
-      const status = error.message.includes("not found")
-        ? 404
-        : error.message.includes("access denied")
-          ? 403
-          : error.message.includes("Invalid")
-            ? 400
-            : 500;
-
-      console.error(
-        `[${requestId}] Error deleting topic: ${error.message}. Status: ${status}. Duration: ${duration}ms`,
-        {
-          error,
-          params,
-          duration,
-        }
-      );
-
-      return new Response(JSON.stringify({ error: error.message }), {
-        status,
-        headers: commonHeaders,
+    if (!locals.session?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
       });
     }
 
-    console.error(`[${requestId}] Unexpected error deleting topic. Duration: ${duration}ms`, {
-      error,
-      params,
-      duration,
-    });
+    const userId = locals.session.user.id;
+    const supabase = locals.supabase;
+
+    // Validate topic ID
+    const { id: topicId } = params;
+    if (!topicId) {
+      return new Response(JSON.stringify({ error: "Topic ID is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const validationResult = topicIdSchema.safeParse(topicId);
+    if (!validationResult.success) {
+      return new Response(
+        JSON.stringify({
+          error: "Invalid topic ID",
+          details: fromZodError(validationResult.error).message,
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Delete topic
+    const result = await deleteTopic(supabase, userId, validationResult.data);
+
+    if (result === null) {
+      return new Response(JSON.stringify({ error: "Topic not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(null, { status: 204 });
+  } catch (error) {
+    console.error("Error deleting topic:", error);
 
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
-      headers: commonHeaders,
+      headers: { "Content-Type": "application/json" },
     });
   }
 };

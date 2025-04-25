@@ -1,7 +1,8 @@
 import type { APIRoute } from "astro";
+import { getTopics, createTopic } from "../../lib/services/topics.service";
+import { supabaseClient } from "../../db/supabase.client";
 import { createTopicSchema } from "../../lib/schemas/topic.schema";
-import { createTopic, getTopics } from "../../lib/services/topics.service";
-import { DEFAULT_USER_ID, supabaseClient } from "../../db/supabase.client";
+import { fromZodError } from "zod-validation-error";
 
 export const prerender = false;
 
@@ -10,29 +11,33 @@ export const prerender = false;
  *
  * Returns paginated list of topics for the default user
  */
-export const GET: APIRoute = async ({ request }) => {
+export const GET: APIRoute = async ({ request, locals }) => {
   try {
-    // Parse query parameters from URL
+    if (!locals.session?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const userId = locals.session.user.id;
+
+    // Parse query parameters
     const url = new URL(request.url);
-    const limitParam = url.searchParams.get("limit");
-    const offsetParam = url.searchParams.get("offset");
+    const limit = parseInt(url.searchParams.get("limit") || "50");
+    const offset = parseInt(url.searchParams.get("offset") || "0");
 
-    // Parse numeric parameters safely
-    const limit = limitParam ? parseInt(limitParam) : undefined;
-    const offset = offsetParam ? parseInt(offsetParam) : undefined;
+    // Get topics
+    const topicsResponse = await getTopics(supabaseClient, userId, { limit, offset });
 
-    // Get topics using the default user ID and supabaseClient
-    const topicsResponse = await getTopics(supabaseClient, DEFAULT_USER_ID, { limit, offset });
-
-    // Return topics
     return new Response(JSON.stringify(topicsResponse), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Błąd podczas pobierania tematów:", error);
+    console.error("Error fetching topics:", error);
 
-    return new Response(JSON.stringify({ error: "Wystąpił błąd podczas przetwarzania żądania" }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
@@ -46,34 +51,42 @@ export const GET: APIRoute = async ({ request }) => {
  * Validates request body against schema
  * Creates topic in database and returns it
  */
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // Parse and validate input data
+    if (!locals.session?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const userId = locals.session.user.id;
+
+    // Parse and validate request body
     const body = await request.json();
     const validateResult = createTopicSchema.safeParse(body);
 
     if (!validateResult.success) {
       return new Response(
         JSON.stringify({
-          error: "Nieprawidłowe dane wejściowe",
-          details: validateResult.error.errors,
+          error: "Validation failed",
+          details: fromZodError(validateResult.error).message,
         }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // Create topic using the default user ID and supabaseClient
-    const newTopic = await createTopic(supabaseClient, DEFAULT_USER_ID, validateResult.data);
+    // Create topic
+    const newTopic = await createTopic(supabaseClient, userId, validateResult.data);
 
-    // Return created topic
     return new Response(JSON.stringify(newTopic), {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Błąd podczas tworzenia tematu:", error);
+    console.error("Error creating topic:", error);
 
-    return new Response(JSON.stringify({ error: "Wystąpił błąd podczas przetwarzania żądania" }), {
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

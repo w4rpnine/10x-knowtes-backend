@@ -1,285 +1,213 @@
 import type { APIRoute } from "astro";
 import { NotesService } from "../../../lib/services/notes.service";
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
-import { z } from "zod";
 import { noteIdSchema, updateNoteSchema } from "../../../lib/schemas/note.schema";
+import { fromZodError } from "zod-validation-error";
 
 export const prerender = false;
 
-// Validation schema for the note ID
-const paramsSchema = z.object({
-  id: z.string().uuid("Invalid note ID format"),
-});
-
-// CORS headers
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS, PUT, DELETE",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  "Content-Type": "application/json",
-};
-
 /**
- * GET /notes/{id} - Retrieve a specific note by ID
+ * GET /api/notes/{id} - Retrieves a single note by ID
  *
- * @description Fetches detailed information about a single note.
+ * Route parameters:
+ * - id: UUID of the note to retrieve
  *
- * @param {Object} params.id - UUID of the note to retrieve
- * @throws {400} - When note ID is invalid
- * @throws {404} - When note is not found
- * @returns {Promise<Response>} Note data or error response
+ * Returns note if found and belongs to user
  */
-export const GET: APIRoute = async ({ params, locals, request }) => {
-  // Handle OPTIONS request for CORS
-  if (request.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: corsHeaders,
-    });
-  }
-
+export const GET: APIRoute = async ({ params, locals }) => {
   try {
-    // Validate note ID
-    const result = paramsSchema.safeParse(params);
-    if (!result.success) {
-      return new Response(JSON.stringify({ error: "Invalid note ID" }), {
-        status: 400,
-        headers: corsHeaders,
+    if (!locals.session?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
       });
     }
 
-    // Get note using the service with DEFAULT_USER_ID
-    const notesService = new NotesService(locals.supabase);
-    const note = await notesService.getNoteById(result.data.id, DEFAULT_USER_ID);
+    const userId = locals.session.user.id;
+    const supabase = locals.supabase;
+
+    // Validate note ID
+    if (!params.id) {
+      return new Response(JSON.stringify({ error: "Note ID is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const result = noteIdSchema.safeParse(params.id);
+    if (!result.success) {
+      return new Response(
+        JSON.stringify({
+          error: "Invalid note ID",
+          details: fromZodError(result.error).message,
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Get note using the service
+    const notesService = new NotesService(supabase);
+    const note = await notesService.getNoteById(params.id, userId);
 
     if (!note) {
       return new Response(JSON.stringify({ error: "Note not found" }), {
         status: 404,
-        headers: corsHeaders,
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     return new Response(JSON.stringify(note), {
       status: 200,
-      headers: corsHeaders,
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
     console.error("Error fetching note:", error);
+
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
-      headers: corsHeaders,
+      headers: { "Content-Type": "application/json" },
     });
   }
 };
 
 /**
- * PUT /notes/{id} - Update a specific note
+ * PUT /api/notes/{id} - Updates a note
  *
- * @description Updates an existing note with new title and/or content. The endpoint requires
- * authentication and verifies that the note belongs to the authenticated user. At least one
- * field (title or content) must be provided in the request body.
+ * Route parameters:
+ * - id: UUID of the note to update
  *
- * @param {Object} params - Route parameters
- * @param {string} params.id - UUID of the note to update
- * @param {Object} request - Incoming request object
- * @param {Object} request.body - Request body containing update data
- * @param {string} [request.body.title] - Optional new title for the note (1-150 characters)
- * @param {string} [request.body.content] - Optional new content for the note (max 3000 characters)
- * @param {Object} locals - Astro locals object containing the Supabase client
+ * Request body:
+ * - title: Optional new title for the note
+ * - content: Optional new content for the note
  *
- * @throws {400} - When note ID is invalid or request body validation fails
- * @throws {404} - When note is not found or user doesn't have access
- * @throws {500} - When an unexpected error occurs
- *
- * @returns {Promise<Response>} JSON response containing:
- *   - On success (200): Updated note data
- *   - On error: Error message and details
- *
- * @example
- * // Request body example:
- * {
- *   "title": "Updated Note Title",
- *   "content": "Updated note content..."
- * }
- *
- * // Success response example:
- * {
- *   "id": "123e4567-e89b-12d3-a456-426614174000",
- *   "title": "Updated Note Title",
- *   "content": "Updated note content...",
- *   "topic_id": "789e4567-e89b-12d3-a456-426614174000",
- *   "user_id": "456e4567-e89b-12d3-a456-426614174000",
- *   "is_summary": false,
- *   "created_at": "2024-03-20T12:00:00Z",
- *   "updated_at": "2024-03-20T12:30:00Z"
- * }
+ * Returns updated note
  */
-export const PUT: APIRoute = async ({ params, locals, request }) => {
-  // Handle OPTIONS request for CORS
-  if (request.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: corsHeaders,
-    });
-  }
-
+export const PUT: APIRoute = async ({ params, request, locals }) => {
   try {
+    if (!locals.session?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const userId = locals.session.user.id;
+    const supabase = locals.supabase;
+
     // Validate note ID
-    const paramsResult = noteIdSchema.safeParse(params);
+    if (!params.id) {
+      return new Response(JSON.stringify({ error: "Note ID is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const paramsResult = noteIdSchema.safeParse(params.id);
     if (!paramsResult.success) {
       return new Response(
         JSON.stringify({
           error: "Invalid note ID",
-          details: paramsResult.error.format(),
+          details: fromZodError(paramsResult.error).message,
         }),
-        {
-          status: 400,
-          headers: corsHeaders,
-        }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // Parse and validate input data
-    const requestData = await request.json();
-    const bodyResult = updateNoteSchema.safeParse(requestData);
+    // Parse and validate request body
+    const body = await request.json();
+    const bodyResult = updateNoteSchema.safeParse(body);
 
     if (!bodyResult.success) {
       return new Response(
         JSON.stringify({
-          error: "Invalid request data",
-          details: bodyResult.error.format(),
+          error: "Validation failed",
+          details: fromZodError(bodyResult.error).message,
         }),
-        {
-          status: 400,
-          headers: corsHeaders,
-        }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // Update note using the service with DEFAULT_USER_ID
-    const notesService = new NotesService(locals.supabase);
-    const updatedNote = await notesService.updateNote(paramsResult.data.id, DEFAULT_USER_ID, bodyResult.data);
+    // Update note using the service
+    const notesService = new NotesService(supabase);
+    const updatedNote = await notesService.updateNote(params.id, userId, bodyResult.data);
 
     if (!updatedNote) {
       return new Response(JSON.stringify({ error: "Note not found" }), {
         status: 404,
-        headers: corsHeaders,
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     return new Response(JSON.stringify(updatedNote), {
       status: 200,
-      headers: corsHeaders,
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
     console.error("Error updating note:", error);
+
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
-      headers: corsHeaders,
+      headers: { "Content-Type": "application/json" },
     });
   }
 };
 
 /**
- * DELETE /notes/{id} - Deletes a note
+ * DELETE /api/notes/{id} - Deletes a note
  *
- * @description Deletes a note by ID. Requires user authentication.
- * Only the note owner can delete it. Returns 204 No Content on success.
+ * Route parameters:
+ * - id: UUID of the note to delete
  *
- * @param {Object} context - Astro API route context
- * @param {Object} context.params - Route parameters
- * @param {string} context.params.id - UUID of the note to delete
- * @param {Object} context.locals - Astro locals containing Supabase client
- * @param {SupabaseClient} context.locals.supabase - Supabase client instance
- * @param {Object} context.request - Request object for CORS handling
- *
- * @throws {400} - When note ID is invalid
- * @throws {404} - When note doesn't exist or user doesn't have access
- * @throws {500} - When an unexpected error occurs
- *
- * @returns {Promise<Response>} 204 No Content on success, error response otherwise
- *
- * @example
- * // Success response:
- * // Status: 204 No Content
- * // No response body
- *
- * // Error response example:
- * // Status: 404 Not Found
- * {
- *   "error": "Note not found"
- * }
+ * Returns no content on success
  */
-export const DELETE: APIRoute = async ({ params, locals, request }) => {
-  const requestId = crypto.randomUUID();
-  const startTime = Date.now();
-
-  // Handle OPTIONS request for CORS
-  if (request.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: corsHeaders,
-    });
-  }
-
+export const DELETE: APIRoute = async ({ params, locals }) => {
   try {
-    console.log(`[${requestId}] DELETE /notes/${params.id} - Request started`);
+    if (!locals.session?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const userId = locals.session.user.id;
+    const supabase = locals.supabase;
 
     // Validate note ID
-    const paramsResult = noteIdSchema.safeParse(params);
+    if (!params.id) {
+      return new Response(JSON.stringify({ error: "Note ID is required" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const paramsResult = noteIdSchema.safeParse(params.id);
     if (!paramsResult.success) {
       return new Response(
         JSON.stringify({
           error: "Invalid note ID",
-          details: paramsResult.error.format(),
+          details: fromZodError(paramsResult.error).message,
         }),
-        {
-          status: 400,
-          headers: corsHeaders,
-        }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // Get Supabase client from locals
-    const { supabase } = locals;
-
-    // Delete note using service with DEFAULT_USER_ID
+    // Delete note using service
     const notesService = new NotesService(supabase);
-    const deleted = await notesService.deleteNote(paramsResult.data.id, DEFAULT_USER_ID);
+    const result = await notesService.deleteNote(params.id, userId);
 
-    if (!deleted) {
-      const duration = Date.now() - startTime;
-      console.log(`[${requestId}] Note not found. Duration: ${duration}ms`);
-
+    if (result === false) {
       return new Response(JSON.stringify({ error: "Note not found" }), {
         status: 404,
-        headers: corsHeaders,
+        headers: { "Content-Type": "application/json" },
       });
     }
 
-    const duration = Date.now() - startTime;
-    console.log(`[${requestId}] Note deleted successfully. Duration: ${duration}ms`);
-
-    // Return 204 No Content for successful deletion
-    return new Response(null, {
-      status: 204,
-      headers: corsHeaders,
-    });
+    return new Response(null, { status: 204 });
   } catch (error) {
-    const duration = Date.now() - startTime;
-
-    console.error(
-      `[${requestId}] Error deleting note: ${error instanceof Error ? error.message : "Unknown error"}. Duration: ${duration}ms`,
-      {
-        error,
-        params,
-        duration,
-      }
-    );
+    console.error("Error deleting note:", error);
 
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
-      headers: corsHeaders,
+      headers: { "Content-Type": "application/json" },
     });
   }
 };

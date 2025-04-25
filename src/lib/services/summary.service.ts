@@ -1,6 +1,5 @@
 import type { SupabaseClient } from "../../db/supabase.client";
 import { AIService } from "./ai.service";
-import { DEFAULT_USER_ID } from "../../db/supabase.client";
 import { APIError } from "../utils/error-handling";
 import type { CreateNoteCommand, NoteDTO } from "../../types";
 
@@ -26,15 +25,12 @@ export class SummaryService {
     _userId: string,
     topicId: string
   ): Promise<{ summary_stat_id: string; title: string; content: string }> {
-    // Using DEFAULT_USER_ID for development/testing
-    const userId = DEFAULT_USER_ID;
-
     // 1. Check if topic exists and belongs to user
     const { data: topic, error: topicError } = await this.supabase
       .from("topics")
       .select("id")
       .eq("id", topicId)
-      .eq("user_id", userId)
+      .eq("user_id", _userId)
       .single();
 
     if (topicError || !topic) {
@@ -88,7 +84,7 @@ export class SummaryService {
 
   /**
    * Accept a generated summary for a topic
-   * @param userId User ID (currently ignored - using DEFAULT_USER_ID for development)
+   * @param userId User ID
    * @param topicId Topic ID
    * @param summaryId Summary stat ID
    * @returns Object containing the summary_stat_id
@@ -100,15 +96,12 @@ export class SummaryService {
     summaryId: string,
     summary: { title: string; content: string }
   ): Promise<{ summary_stat_id: string }> {
-    // Using DEFAULT_USER_ID for development/testing
-    const userId = DEFAULT_USER_ID;
-
     // 1. Verify topic exists and belongs to user
     const { data: topic, error: topicError } = await this.supabase
       .from("topics")
       .select("id, title")
       .eq("id", topicId)
-      .eq("user_id", userId)
+      .eq("user_id", _userId)
       .single();
 
     if (topicError) {
@@ -215,7 +208,7 @@ export class SummaryService {
    * 3. Ensures the summary belongs to the specified topic
    * 4. Deletes the summary from the database
    *
-   * @param _userId User ID (currently ignored, using DEFAULT_USER_ID for development)
+   * @param _userId User ID
    * @param topicId Topic ID to identify the parent topic
    * @param summaryId Summary stat ID to identify the summary to reject
    * @returns Object containing the summary_stat_id of the rejected summary
@@ -225,15 +218,12 @@ export class SummaryService {
    * @throws APIError(500) If database operations fail
    */
   async rejectSummary(_userId: string, topicId: string, summaryId: string): Promise<{ summary_stat_id: string }> {
-    // Using DEFAULT_USER_ID for development/testing
-    const userId = DEFAULT_USER_ID;
-
     // 1. Verify topic exists and belongs to user
     const { data: topic, error: topicError } = await this.supabase
       .from("topics")
       .select("id")
       .eq("id", topicId)
-      .eq("user_id", userId)
+      .eq("user_id", _userId)
       .single();
 
     if (topicError) {
