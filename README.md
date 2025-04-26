@@ -39,6 +39,11 @@ The application supports students, professionals, researchers, and hobbyists in 
 ### AI Integration
 - [Openrouter.ai](https://openrouter.ai/)
 
+### Testing
+- [Vitest](https://vitest.dev/) - Unit and component testing framework
+- [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) - DOM testing utilities for React
+- [Playwright](https://playwright.dev/) - End-to-end testing
+
 ### CI/CD & Hosting
 - GitHub Actions
 - DigitalOcean
@@ -90,6 +95,10 @@ The application supports students, professionals, researchers, and hobbyists in 
 - `npm run lint` - Run ESLint to check code quality
 - `npm run lint:fix` - Run ESLint and automatically fix issues
 - `npm run format` - Format code using Prettier
+- `npm run test` - Run unit tests with Vitest
+- `npm run test:watch` - Run unit tests in watch mode
+- `npm run test:coverage` - Generate test coverage report
+- `npm run test:e2e` - Run end-to-end tests with Playwright
 
 ## Project Scope
 

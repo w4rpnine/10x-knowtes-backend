@@ -11,6 +11,11 @@ Supabase
 # Komunikacja z modelami AI:
 Openrouter.ai:
 
+# Testing:
+- Vitest - testy jednostkowe i komponentowe
+- React Testing Library - testowanie komponentów React
+- Playwright - testy end-to-end
+
 # CI/CD i Hosting:
 - Github Actions
 - DigitalOcean
