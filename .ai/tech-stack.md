@@ -1,11 +1,12 @@
-# Frontend:
+# Frontend: (separate deployment)
 - Next.js 15
 - React 19
 - TypeScript 5
 - Tailwind 4
 - Shadcn/ui
 
-# Backend:
+# Backend: (separate deployment)
+Astro 5
 Supabase
 
 # Komunikacja z modelami AI:
