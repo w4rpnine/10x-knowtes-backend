@@ -109,9 +109,7 @@ export const GET: APIRoute = async ({ params, request }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Błąd podczas pobierania notatek:", error);
-
-    return new Response(JSON.stringify({ error: "Wystąpił błąd podczas przetwarzania żądania" }), {
+    return new Response(JSON.stringify({ error: "Wystąpił błąd podczas przetwarzania żądania " + error }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
@@ -166,9 +164,7 @@ export const POST: APIRoute = async ({ request, params, locals }) => {
     // Zwróć utworzoną notatkę
     return new Response(JSON.stringify(note), { status: 201, headers: { "Content-Type": "application/json" } });
   } catch (error) {
-    console.error("Error creating note:", error);
-
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    return new Response(JSON.stringify({ error: "Internal server error " + error }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

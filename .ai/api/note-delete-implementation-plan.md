@@ -157,8 +157,6 @@ export const DELETE: APIRoute = async ({ params, locals, request }) => {
   }
 
   try {
-    console.log(`[${requestId}] DELETE /notes/${params.id} - Request started`);
-    
     // Walidacja ID notatki
     const paramsResult = noteIdSchema.safeParse(params);
     if (!paramsResult.success) {
@@ -187,9 +185,6 @@ export const DELETE: APIRoute = async ({ params, locals, request }) => {
     );
 
     if (!deleted) {
-      const duration = Date.now() - startTime;
-      console.log(`[${requestId}] Note not found. Duration: ${duration}ms`);
-      
       return new Response(
         JSON.stringify({ error: "Note not found" }),
         {
@@ -199,9 +194,6 @@ export const DELETE: APIRoute = async ({ params, locals, request }) => {
       );
     }
 
-    const duration = Date.now() - startTime;
-    console.log(`[${requestId}] Note deleted successfully. Duration: ${duration}ms`);
-    
     // Zwróć 204 No Content dla pomyślnego usunięcia
     return new Response(null, {
       status: 204,

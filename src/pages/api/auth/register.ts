@@ -76,8 +76,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       },
     });
   } catch (error) {
-    console.error("Registration error:", error);
-
     if (error instanceof EmailAlreadyInUseError) {
       return new Response(JSON.stringify({ error: error.message }), {
         status: 409,

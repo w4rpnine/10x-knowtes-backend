@@ -75,9 +75,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
       headers: commonHeaders,
     });
   } catch (error) {
-    console.error("Error fetching note:", error);
-
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    return new Response(JSON.stringify({ error: "Internal server error " + error }), {
       status: 500,
       headers: commonHeaders,
     });
@@ -160,9 +158,7 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
       headers: commonHeaders,
     });
   } catch (error) {
-    console.error("Error updating note:", error);
-
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    return new Response(JSON.stringify({ error: "Internal server error " + error }), {
       status: 500,
       headers: commonHeaders,
     });
@@ -224,9 +220,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
 
     return new Response(null, { status: 204, headers: commonHeaders });
   } catch (error) {
-    console.error("Error deleting note:", error);
-
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    return new Response(JSON.stringify({ error: "Internal server error " + error }), {
       status: 500,
       headers: commonHeaders,
     });

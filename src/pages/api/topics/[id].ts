@@ -76,9 +76,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error fetching topic:", error);
-
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    return new Response(JSON.stringify({ error: "Internal server error " + error }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
@@ -160,9 +158,7 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error updating topic:", error);
-
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    return new Response(JSON.stringify({ error: "Internal server error " + error }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
@@ -222,9 +218,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
 
     return new Response(null, { status: 204 });
   } catch (error) {
-    console.error("Error deleting topic:", error);
-
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    return new Response(JSON.stringify({ error: "Internal server error " + error }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

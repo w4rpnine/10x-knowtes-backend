@@ -13,8 +13,6 @@ export class APIError extends Error {
 }
 
 export function handleAPIError(error: unknown): Response {
-  console.error("API Error:", error);
-
   if (error instanceof APIError) {
     return new Response(
       JSON.stringify({

@@ -46,23 +46,18 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-      console.error("Logout error:", error);
       return new Response(JSON.stringify({ error: "Server error during logout" }), {
         status: 500,
         headers: { "Content-Type": "application/json" },
       });
     }
 
-    // Log successful logout
-    console.info(`User ${user.id} successfully logged out at ${new Date().toISOString()}`);
-
     return new Response(JSON.stringify({ message: "Successfully logged out" }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Unexpected error during logout:", error);
-    return new Response(JSON.stringify({ error: "Server error during logout" }), {
+    return new Response(JSON.stringify({ error: "Server error during logout " + error }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

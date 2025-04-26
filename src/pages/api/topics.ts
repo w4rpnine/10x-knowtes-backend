@@ -46,9 +46,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       headers: commonHeaders,
     });
   } catch (error) {
-    console.error("Error fetching topics:", error);
-
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    return new Response(JSON.stringify({ error: "Internal server error " + error }), {
       status: 500,
       headers: commonHeaders,
     });
@@ -97,9 +95,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       headers: commonHeaders,
     });
   } catch (error) {
-    console.error("Error creating topic:", error);
-
-    return new Response(JSON.stringify({ error: "Internal server error" }), {
+    return new Response(JSON.stringify({ error: "Internal server error " + error }), {
       status: 500,
       headers: commonHeaders,
     });
