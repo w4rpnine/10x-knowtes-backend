@@ -229,7 +229,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
     
     // Obsługa nieoczekiwanych błędów
-    console.error("Registration error:", error);
     return new Response(JSON.stringify({ error: "Server error during registration" }), {
       status: 500,
       headers: {
