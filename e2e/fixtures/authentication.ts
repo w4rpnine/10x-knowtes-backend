@@ -1,4 +1,5 @@
-import { test as base } from "@playwright/test";
+/* eslint-disable react-hooks/rules-of-hooks */
+import { test as base, type Page } from "@playwright/test";
 import { LoginPage } from "../page-objects/login-page";
 
 interface AuthFixtures {
@@ -8,14 +9,17 @@ interface AuthFixtures {
   };
 }
 
+// Define type for Playwright use function
+type UseFunction<T> = (value: T) => Promise<void>;
+
 export const test = base.extend<AuthFixtures>({
-  loginPage: async ({ page }, use) => {
+  loginPage: async ({ page }: { page: Page }, use: UseFunction<LoginPage>) => {
     const loginPage = new LoginPage(page);
     await use(loginPage);
   },
 
   // Fixture, która zapewnia zalogowanego użytkownika
-  authenticatedPage: async ({ page }, use) => {
+  authenticatedPage: async ({ page }: { page: Page }, use: UseFunction<{ token: string }>) => {
     // Implementuj logikę logowania
     // Można użyć API bezpośrednio lub UI w zależności od potrzeb
 
@@ -23,7 +27,7 @@ export const test = base.extend<AuthFixtures>({
     await page.goto("/");
     const mockAuthToken = "mock-auth-token-for-testing";
 
-    await page.evaluate((token) => {
+    await page.evaluate((token: string) => {
       localStorage.setItem(
         "supabase.auth.token",
         JSON.stringify({

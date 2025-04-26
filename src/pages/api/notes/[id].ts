@@ -1,6 +1,5 @@
 import type { APIRoute } from "astro";
 import { NotesService } from "../../../lib/services/notes.service";
-import { noteIdSchema, updateNoteSchema } from "../../../lib/schemas/note.schema";
 import { fromZodError } from "zod-validation-error";
 import { DEFAULT_USER_ID, supabaseClient } from "../../../db/supabase.client";
 import { z } from "zod";

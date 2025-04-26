@@ -16,11 +16,12 @@ export class LoginPage {
     this.errorMessage = page.locator('[data-testid="login-error"]');
   }
 
-  async goto() {
+  async navigate() {
     await this.page.goto("/login");
   }
 
   async login(email: string, password: string) {
+    await this.navigate();
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
     await this.loginButton.click();

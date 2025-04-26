@@ -21,7 +21,7 @@ export const prerender = false;
  *
  * Returns paginated list of notes that belong to the specified topic
  */
-export const GET: APIRoute = async ({ params, request, locals }) => {
+export const GET: APIRoute = async ({ params, request }) => {
   try {
     // if (!locals.session?.user) {
     //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
