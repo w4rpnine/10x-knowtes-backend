@@ -5,7 +5,7 @@ import { getNotesQuerySchema, topicIdSchema } from "../../../../lib/schemas/note
 import { fromZodError } from "zod-validation-error";
 import { createNoteSchema } from "../../../../lib/schemas/note.schema";
 import { createNote } from "../../../../lib/services/notes.service";
-
+import { DEFAULT_USER_ID } from "../../../../db/supabase.client";
 export const prerender = false;
 
 /**
@@ -23,14 +23,15 @@ export const prerender = false;
  */
 export const GET: APIRoute = async ({ params, request, locals }) => {
   try {
-    if (!locals.session?.user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    // if (!locals.session?.user) {
+    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    //     status: 401,
+    //     headers: { "Content-Type": "application/json" },
+    //   });
+    // }
 
-    const userId = locals.session.user.id;
+    // const userId = locals.session.user.id;
+    const userId = DEFAULT_USER_ID;
 
     // Validate topicId parameter
     const { topicId } = params;
@@ -118,14 +119,15 @@ export const GET: APIRoute = async ({ params, request, locals }) => {
 };
 
 export const POST: APIRoute = async ({ request, params, locals }) => {
-  if (!locals.session?.user) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  // if (!locals.session?.user) {
+  //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
+  //     status: 401,
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  // }
 
-  const userId = locals.session.user.id;
+  // const userId = locals.session.user.id;
+  const userId = DEFAULT_USER_ID;
   const supabase = locals.supabase;
   const topicId = params.topicId;
 

@@ -2,17 +2,18 @@ import type { APIRoute } from "astro";
 import { SummaryService } from "../../../../../lib/services/summary.service";
 import { summaryTopicIdSchema } from "../../../../../lib/schemas/summary.schema";
 import { handleAPIError } from "../../../../../lib/utils/error-handling";
-
+import { DEFAULT_USER_ID } from "../../../../../db/supabase.client";
 export const POST: APIRoute = async (context) => {
   try {
-    if (!context.locals.session?.user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    // if (!context.locals.session?.user) {
+    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    //     status: 401,
+    //     headers: { "Content-Type": "application/json" },
+    //   });
+    // }
 
-    const userId = context.locals.session.user.id;
+    // const userId = context.locals.session.user.id;
+    const userId = DEFAULT_USER_ID;
 
     // Validate input parameters
     const { topicId } = summaryTopicIdSchema.parse(context.params);

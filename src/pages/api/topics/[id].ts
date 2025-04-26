@@ -3,7 +3,8 @@ import { getTopic, updateTopic, deleteTopic } from "../../../lib/services/topics
 import { updateTopicSchema } from "../../../lib/schemas/topic.schema";
 import { fromZodError } from "zod-validation-error";
 import { z } from "zod";
-
+import { DEFAULT_USER_ID } from "../../../db/supabase.client";
+import { supabaseClient } from "../../../db/supabase.client";
 export const prerender = false;
 
 // Define topic ID schema here since it's not exported from topic.schema.ts
@@ -27,15 +28,18 @@ const commonHeaders = {
  */
 export const GET: APIRoute = async ({ params, locals }) => {
   try {
-    if (!locals.session?.user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    // if (!locals.session?.user) {
+    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    //     status: 401,
+    //     headers: { "Content-Type": "application/json" },
+    //   });
+    // }
 
-    const userId = locals.session.user.id;
-    const supabase = locals.supabase;
+    // const userId = locals.session.user.id;
+    const userId = DEFAULT_USER_ID;
+
+    // Use locals.supabase if available, otherwise fallback to supabaseClient
+    const supabase = locals.supabase || supabaseClient;
 
     // Validate topic ID
     const { id: topicId } = params;
@@ -94,15 +98,16 @@ export const GET: APIRoute = async ({ params, locals }) => {
  */
 export const PUT: APIRoute = async ({ params, request, locals }) => {
   try {
-    if (!locals.session?.user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    // if (!locals.session?.user) {
+    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    //     status: 401,
+    //     headers: { "Content-Type": "application/json" },
+    //   });
+    // }
 
-    const userId = locals.session.user.id;
-    const supabase = locals.supabase;
+    // const userId = locals.session.user.id;
+    const userId = DEFAULT_USER_ID;
+    const supabase = locals.supabase || supabaseClient;
 
     // Validate topic ID
     const { id: topicId } = params;
@@ -174,15 +179,16 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
  */
 export const DELETE: APIRoute = async ({ params, locals }) => {
   try {
-    if (!locals.session?.user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    // if (!locals.session?.user) {
+    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    //     status: 401,
+    //     headers: { "Content-Type": "application/json" },
+    //   });
+    // }
 
-    const userId = locals.session.user.id;
-    const supabase = locals.supabase;
+    // const userId = locals.session.user.id;
+    const userId = DEFAULT_USER_ID;
+    const supabase = locals.supabase || supabaseClient;
 
     // Validate topic ID
     const { id: topicId } = params;

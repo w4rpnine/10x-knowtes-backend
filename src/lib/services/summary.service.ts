@@ -57,8 +57,7 @@ export class SummaryService {
       .from("summary_stats")
       .insert({
         topic_id: topicId,
-        user_id: userId,
-        accepted: false,
+        user_id: _userId,
       })
       .select()
       .single();
@@ -76,7 +75,7 @@ export class SummaryService {
       };
     } catch (error) {
       // If AI generation fails, clean up the summary stat
-      await this.supabase.from("summary_stats").delete().eq("id", summaryStat.id).eq("user_id", userId);
+      await this.supabase.from("summary_stats").delete().eq("id", summaryStat.id).eq("user_id", _userId);
 
       throw new Error(`Failed to generate summary: ${error instanceof Error ? error.message : "Unknown error"}`);
     }
@@ -120,7 +119,7 @@ export class SummaryService {
       .from("summary_stats")
       .select("id, topic_id")
       .eq("id", summaryId)
-      .eq("user_id", userId)
+      .eq("user_id", _userId)
       .single();
 
     if (summaryStatError) {
@@ -158,7 +157,7 @@ export class SummaryService {
           title: noteData.title,
           content: noteData.content,
           topic_id: topicId,
-          user_id: userId,
+          user_id: _userId,
           is_summary: true,
         })
         .select("id")
@@ -176,7 +175,7 @@ export class SummaryService {
           summary_note_id: note.id,
         })
         .eq("id", summaryId)
-        .eq("user_id", userId);
+        .eq("user_id", _userId);
 
       if (updateError) {
         // If update fails, we should ideally delete the created note, but for simplicity,
@@ -242,7 +241,7 @@ export class SummaryService {
       .from("summary_stats")
       .select("id, topic_id")
       .eq("id", summaryId)
-      .eq("user_id", userId)
+      .eq("user_id", _userId)
       .single();
 
     if (summaryStatError) {

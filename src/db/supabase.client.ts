@@ -6,6 +6,8 @@ import type { AstroCookies } from "astro";
 
 export type SupabaseClient = BaseSupabaseClient<Database>;
 
+export const DEFAULT_USER_ID = "00000000-0000-4000-a000-000000000000";
+
 // Cookie options for Supabase Auth
 export const cookieOptions: CookieOptionsWithName = {
   path: "/",

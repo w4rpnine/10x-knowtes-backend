@@ -3,8 +3,17 @@ import { getTopics, createTopic } from "../../lib/services/topics.service";
 import { supabaseClient } from "../../db/supabase.client";
 import { createTopicSchema } from "../../lib/schemas/topic.schema";
 import { fromZodError } from "zod-validation-error";
-
+import { DEFAULT_USER_ID } from "../../db/supabase.client";
 export const prerender = false;
+
+// Common headers for all responses
+const commonHeaders = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "http://localhost:3000",
+  "Access-Control-Allow-Credentials": "true",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Cookie, Authorization",
+};
 
 /**
  * GET /api/topics - Retrieves a list of topics
@@ -13,33 +22,35 @@ export const prerender = false;
  */
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
-    if (!locals.session?.user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    // if (!locals.session?.user) {
+    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    //     status: 401,
+    //     headers: { "Content-Type": "application/json" },
+    //   });
+    // }
 
-    const userId = locals.session.user.id;
+    // const userId = locals.session.user.id;
+    const userId = DEFAULT_USER_ID;
 
     // Parse query parameters
     const url = new URL(request.url);
     const limit = parseInt(url.searchParams.get("limit") || "50");
     const offset = parseInt(url.searchParams.get("offset") || "0");
 
-    // Get topics
-    const topicsResponse = await getTopics(supabaseClient, userId, { limit, offset });
+    // Get topics using Supabase client
+    const supaclient = locals.supabase || supabaseClient;
+    const topicsResponse = await getTopics(supaclient, userId, { limit, offset });
 
     return new Response(JSON.stringify(topicsResponse), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: commonHeaders,
     });
   } catch (error) {
     console.error("Error fetching topics:", error);
 
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: commonHeaders,
     });
   }
 };
@@ -53,14 +64,15 @@ export const GET: APIRoute = async ({ request, locals }) => {
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    if (!locals.session?.user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    // if (!locals.session?.user) {
+    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    //     status: 401,
+    //     headers: { "Content-Type": "application/json" },
+    //   });
+    // }
 
-    const userId = locals.session.user.id;
+    // const userId = locals.session.user.id;
+    const userId = DEFAULT_USER_ID;
 
     // Parse and validate request body
     const body = await request.json();
@@ -72,23 +84,34 @@ export const POST: APIRoute = async ({ request, locals }) => {
           error: "Validation failed",
           details: fromZodError(validateResult.error).message,
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: commonHeaders }
       );
     }
 
-    // Create topic
-    const newTopic = await createTopic(supabaseClient, userId, validateResult.data);
+    // Create topic with the appropriate client
+    const supaclient = locals.supabase || supabaseClient;
+    const newTopic = await createTopic(supaclient, userId, validateResult.data);
 
     return new Response(JSON.stringify(newTopic), {
       status: 201,
-      headers: { "Content-Type": "application/json" },
+      headers: commonHeaders,
     });
   } catch (error) {
     console.error("Error creating topic:", error);
 
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: commonHeaders,
     });
   }
+};
+
+/**
+ * OPTIONS - Handle CORS preflight requests
+ */
+export const OPTIONS: APIRoute = async () => {
+  return new Response(null, {
+    status: 204,
+    headers: commonHeaders,
+  });
 };
