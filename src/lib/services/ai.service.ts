@@ -1,6 +1,5 @@
 import type { NoteDTO } from "../../types";
 import { OpenRouterService } from "./openrouter.service";
-import type { OpenRouterSummaryResponse } from "../types/openrouter.types";
 
 export class AIService {
   private readonly openRouterService: OpenRouterService;

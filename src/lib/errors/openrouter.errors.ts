@@ -2,7 +2,7 @@ export class OpenRouterError extends Error {
   constructor(
     message: string,
     public status?: number,
-    public details?: any
+    public details?: unknown
   ) {
     super(message);
     this.name = "OpenRouterError";
@@ -19,7 +19,7 @@ export class OpenRouterTimeoutError extends OpenRouterError {
 export class OpenRouterParsingError extends OpenRouterError {
   constructor(
     message: string,
-    public rawResponse?: any
+    public rawResponse?: unknown
   ) {
     super(`Failed to parse OpenRouter response: ${message}`);
     this.name = "OpenRouterParsingError";
