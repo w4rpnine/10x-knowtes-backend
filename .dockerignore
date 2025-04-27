@@ -1,0 +1,36 @@
+# Git files
+.git
+.gitignore
+
+# Node
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.lock
+
+# Build artifacts
+dist
+.astro
+
+# Editor/OS files
+.vscode
+.idea
+.DS_Store
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Env files
+.env*
+!.env.example
+
+# Test/Config files
+playwright-report/
+test-results/
+.cache/
+
+# Cursor files
+.cursor
+.cursorignore 

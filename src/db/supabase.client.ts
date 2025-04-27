@@ -26,18 +26,25 @@ function parseCookieHeader(cookieHeader: string): { name: string; value: string 
 
 // Create server-side Supabase client with cookie handling
 export const createSupabaseServerInstance = (context: { headers: Headers; cookies: AstroCookies }) => {
-  return createServerClient<Database>(import.meta.env.SUPABASE_URL, import.meta.env.SUPABASE_KEY, {
-    cookieOptions,
-    cookies: {
-      getAll() {
-        return parseCookieHeader(context.headers.get("Cookie") ?? "");
+  return createServerClient<Database>(
+    process.env.SUPABASE_URL || import.meta.env.SUPABASE_URL || import.meta.env.PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_KEY || import.meta.env.SUPABASE_KEY || import.meta.env.PUBLIC_SUPABASE_KEY,
+    {
+      cookieOptions,
+      cookies: {
+        getAll() {
+          return parseCookieHeader(context.headers.get("Cookie") ?? "");
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => context.cookies.set(name, value, options));
+        },
       },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) => context.cookies.set(name, value, options));
-      },
-    },
-  });
+    }
+  );
 };
 
 // Initialize the Supabase client for client-side usage
-export const supabaseClient = createClient<Database>(import.meta.env.SUPABASE_URL, import.meta.env.SUPABASE_KEY);
+export const supabaseClient = createClient<Database>(
+  process.env.SUPABASE_URL || import.meta.env.SUPABASE_URL || import.meta.env.PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_KEY || import.meta.env.SUPABASE_KEY || import.meta.env.PUBLIC_SUPABASE_KEY
+);
