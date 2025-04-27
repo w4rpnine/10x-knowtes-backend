@@ -10,7 +10,8 @@ export class SummaryService {
     private readonly supabase: SupabaseClient,
     aiService?: AIService
   ) {
-    const apiKey = import.meta.env.PUBLIC_OPENROUTER_API_KEY;
+    const apiKey =
+      process.env.OPENROUTER_API_KEY || import.meta.env.OPENROUTER_API_KEY || import.meta.env.PUBLIC_OPENROUTER_API_KEY;
     if (!apiKey) {
       throw new Error("PUBLIC_OPENROUTER_API_KEY environment variable is not set");
     }

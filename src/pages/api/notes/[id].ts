@@ -3,12 +3,13 @@ import { NotesService } from "../../../lib/services/notes.service";
 import { fromZodError } from "zod-validation-error";
 import { DEFAULT_USER_ID, supabaseClient } from "../../../db/supabase.client";
 import { z } from "zod";
+import { updateNoteSchema } from "../../../lib/schemas/note.schema";
 export const prerender = false;
 
 // Common headers for all responses
 const commonHeaders = {
   "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "http://localhost:3000",
+  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Credentials": "true",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Cookie, Authorization",

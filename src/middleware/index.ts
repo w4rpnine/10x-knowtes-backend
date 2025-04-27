@@ -1,6 +1,7 @@
 import type { MiddlewareHandler } from "astro";
 import type { AstroCookies } from "astro";
 import { createSupabaseServerInstance } from "../lib/services/supabase.server";
+import { corsMiddleware } from "./cors";
 
 // Public paths that don't require authentication
 const PUBLIC_PATHS = [
@@ -12,7 +13,9 @@ const PUBLIC_PATHS = [
   "/api/auth/reset-password",
 ];
 
-export const onRequest: MiddlewareHandler = async ({ locals, cookies, url, request }, next) => {
+export const onRequest: MiddlewareHandler = async (context, next) => {
+  const { locals, cookies, url, request } = context;
+
   // Initialize Supabase client if not a public path
   if (!PUBLIC_PATHS.includes(url.pathname)) {
     const supabase = createSupabaseServerInstance({
@@ -23,22 +26,6 @@ export const onRequest: MiddlewareHandler = async ({ locals, cookies, url, reque
     locals.supabase = supabase;
   }
 
-  // Get the response from the endpoint
-  const response = await next();
-
-  // Add CORS headers to all responses
-  response.headers.set("Access-Control-Allow-Origin", "http://localhost:3000");
-  response.headers.set("Access-Control-Allow-Credentials", "true");
-  response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  response.headers.set("Access-Control-Allow-Headers", "Content-Type, Cookie, Authorization");
-
-  // Handle preflight OPTIONS requests
-  if (request.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: response.headers,
-    });
-  }
-
-  return response;
+  const result = await corsMiddleware(context, next);
+  return result;
 };
