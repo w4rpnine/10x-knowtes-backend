@@ -118,11 +118,8 @@ const noteIdSchema = z.object({
   id: z.string().uuid("Invalid note ID format")
 });
 
-// Nagłówki CORS i JSON
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS, PUT, DELETE",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+// Nagłówki
+const commonHeaders = {
   "Content-Type": "application/json"
 };
 
@@ -152,7 +149,7 @@ export const DELETE: APIRoute = async ({ params, locals, request }) => {
   if (request.method === "OPTIONS") {
     return new Response(null, {
       status: 204,
-      headers: corsHeaders
+      headers: commonHeaders
     });
   }
 
@@ -167,7 +164,7 @@ export const DELETE: APIRoute = async ({ params, locals, request }) => {
         }),
         {
           status: 400,
-          headers: corsHeaders
+          headers: commonHeaders
         }
       );
     }
@@ -189,7 +186,7 @@ export const DELETE: APIRoute = async ({ params, locals, request }) => {
         JSON.stringify({ error: "Note not found" }),
         {
           status: 404,
-          headers: corsHeaders
+          headers: commonHeaders
         }
       );
     }
@@ -197,7 +194,7 @@ export const DELETE: APIRoute = async ({ params, locals, request }) => {
     // Zwróć 204 No Content dla pomyślnego usunięcia
     return new Response(null, {
       status: 204,
-      headers: corsHeaders
+      headers: commonHeaders
     });
   } catch (error) {
     const duration = Date.now() - startTime;
@@ -215,7 +212,7 @@ export const DELETE: APIRoute = async ({ params, locals, request }) => {
       JSON.stringify({ error: "Internal server error" }),
       {
         status: 500,
-        headers: corsHeaders
+        headers: commonHeaders
       }
     );
   }

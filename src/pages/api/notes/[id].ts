@@ -9,10 +9,6 @@ export const prerender = false;
 // Common headers for all responses
 const commonHeaders = {
   "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Credentials": "true",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Cookie, Authorization",
 };
 
 // Simple UUID validation schema
@@ -31,7 +27,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
     // if (!locals.session?.user) {
     //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
     //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
+    //     headers: commonHeaders,
     //   });
     // }
 
@@ -100,7 +96,7 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
     // if (!locals.session?.user) {
     //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
     //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
+    //     headers: commonHeaders,
     //   });
     // }
 
@@ -179,7 +175,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     // if (!locals.session?.user) {
     //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
     //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
+    //     headers: commonHeaders,
     //   });
     // }
 
@@ -226,14 +222,4 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
       headers: commonHeaders,
     });
   }
-};
-
-/**
- * OPTIONS - Handle CORS preflight requests
- */
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: commonHeaders,
-  });
 };

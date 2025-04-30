@@ -161,10 +161,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
 ```typescript
 // Upewnij się, że DELETE jest również wymienione w allowedMethods
 const commonHeaders = {
-  "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Content-Type": "application/json"
 };
 ```
 

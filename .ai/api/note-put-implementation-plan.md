@@ -139,10 +139,7 @@ Dodanie metody PUT do istniejącego pliku `[id].ts`:
  */
 export const PUT: APIRoute = async ({ params, locals, request }) => {
   // Common headers for all responses
-  const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "PUT, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  const commonHeaders = {
     "Content-Type": "application/json",
   };
 
@@ -150,7 +147,7 @@ export const PUT: APIRoute = async ({ params, locals, request }) => {
   if (request.method === "OPTIONS") {
     return new Response(null, {
       status: 204,
-      headers: corsHeaders,
+      headers: commonHeaders,
     });
   }
 
@@ -160,7 +157,7 @@ export const PUT: APIRoute = async ({ params, locals, request }) => {
     if (!paramsResult.success) {
       return new Response(JSON.stringify({ error: "Invalid note ID" }), {
         status: 400,
-        headers: corsHeaders,
+        headers: commonHeaders,
       });
     }
 
@@ -181,7 +178,7 @@ export const PUT: APIRoute = async ({ params, locals, request }) => {
           details: bodyResult.error.format() 
         }), {
           status: 400,
-          headers: corsHeaders,
+          headers: commonHeaders,
         }
       );
     }
@@ -193,7 +190,7 @@ export const PUT: APIRoute = async ({ params, locals, request }) => {
           error: "At least one field (title or content) must be provided" 
         }), {
           status: 400,
-          headers: corsHeaders,
+          headers: commonHeaders,
         }
       );
     }
@@ -209,19 +206,19 @@ export const PUT: APIRoute = async ({ params, locals, request }) => {
     if (!updatedNote) {
       return new Response(JSON.stringify({ error: "Note not found" }), {
         status: 404,
-        headers: corsHeaders,
+        headers: commonHeaders,
       });
     }
 
     return new Response(JSON.stringify(updatedNote), {
       status: 200,
-      headers: corsHeaders,
+      headers: commonHeaders,
     });
   } catch (error) {
     console.error("Error updating note:", error);
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
-      headers: corsHeaders,
+      headers: commonHeaders,
     });
   }
 };

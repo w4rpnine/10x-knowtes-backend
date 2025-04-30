@@ -13,9 +13,6 @@ const topicIdSchema = z.string().uuid("Topic ID must be a valid UUID");
 // Common headers for all responses
 const commonHeaders = {
   "Content-Type": "application/json",
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
 /**
@@ -31,7 +28,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
     // if (!locals.session?.user) {
     //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
     //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
+    //     headers: commonHeaders,
     //   });
     // }
 
@@ -46,7 +43,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
     if (!topicId) {
       return new Response(JSON.stringify({ error: "Topic ID is required" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: commonHeaders,
       });
     }
 
@@ -57,7 +54,7 @@ export const GET: APIRoute = async ({ params, locals }) => {
           error: "Invalid topic ID",
           details: fromZodError(validationResult.error).message,
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: commonHeaders }
       );
     }
 
@@ -67,18 +64,18 @@ export const GET: APIRoute = async ({ params, locals }) => {
     if (!topic) {
       return new Response(JSON.stringify({ error: "Topic not found" }), {
         status: 404,
-        headers: { "Content-Type": "application/json" },
+        headers: commonHeaders,
       });
     }
 
     return new Response(JSON.stringify(topic), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: commonHeaders,
     });
   } catch (error) {
     return new Response(JSON.stringify({ error: "Internal server error " + error }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: commonHeaders,
     });
   }
 };
@@ -99,7 +96,7 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
     // if (!locals.session?.user) {
     //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
     //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
+    //     headers: commonHeaders,
     //   });
     // }
 
@@ -112,7 +109,7 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
     if (!topicId) {
       return new Response(JSON.stringify({ error: "Topic ID is required" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: commonHeaders,
       });
     }
 
@@ -123,7 +120,7 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
           error: "Invalid topic ID",
           details: fromZodError(validationResult.error).message,
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: commonHeaders }
       );
     }
 
@@ -137,7 +134,7 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
           error: "Validation failed",
           details: fromZodError(validateResult.error).message,
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: commonHeaders }
       );
     }
 
@@ -149,18 +146,18 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
     if (!updatedTopic) {
       return new Response(JSON.stringify({ error: "Topic not found" }), {
         status: 404,
-        headers: { "Content-Type": "application/json" },
+        headers: commonHeaders,
       });
     }
 
     return new Response(JSON.stringify(updatedTopic), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: commonHeaders,
     });
   } catch (error) {
     return new Response(JSON.stringify({ error: "Internal server error " + error }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: commonHeaders,
     });
   }
 };
@@ -178,7 +175,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     // if (!locals.session?.user) {
     //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
     //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
+    //     headers: commonHeaders,
     //   });
     // }
 
@@ -191,7 +188,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     if (!topicId) {
       return new Response(JSON.stringify({ error: "Topic ID is required" }), {
         status: 400,
-        headers: { "Content-Type": "application/json" },
+        headers: commonHeaders,
       });
     }
 
@@ -202,7 +199,7 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
           error: "Invalid topic ID",
           details: fromZodError(validationResult.error).message,
         }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: commonHeaders }
       );
     }
 
@@ -212,23 +209,15 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     if (result === null) {
       return new Response(JSON.stringify({ error: "Topic not found" }), {
         status: 404,
-        headers: { "Content-Type": "application/json" },
+        headers: commonHeaders,
       });
     }
 
-    return new Response(null, { status: 204 });
+    return new Response(null, { status: 204, headers: commonHeaders });
   } catch (error) {
     return new Response(JSON.stringify({ error: "Internal server error " + error }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: commonHeaders,
     });
   }
-};
-
-// Handle OPTIONS requests for CORS preflight
-export const OPTIONS: APIRoute = async () => {
-  return new Response(null, {
-    status: 204,
-    headers: commonHeaders,
-  });
 };
