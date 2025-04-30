@@ -21,6 +21,7 @@ interface ImportMetaEnv {
   readonly SUPABASE_KEY: string;
   readonly SITE: string;
   readonly OPENROUTER_API_KEY: string;
+  readonly FRONTEND_PORT: string;
   // more env variables...
 }
 
