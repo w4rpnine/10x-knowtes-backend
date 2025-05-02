@@ -42,7 +42,7 @@ COPY --from=build --chown=nodejs:nodejs /app/package.json ./package.json
 
 # Set default HOST and PORT, allowing override via environment variables
 ENV HOST=0.0.0.0
-ENV PORT=3001
+ENV PORT=80
 
 EXPOSE ${PORT}
 
