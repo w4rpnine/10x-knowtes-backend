@@ -13,7 +13,7 @@ function getSiteURL(request: Request): string {
   }
 
   // Fallback to constructing URL from request
-  const host = request.headers.get("host") || "localhost:80";
+  const host = request.headers.get("host") || "localhost:3001";
   const protocol = host.includes("localhost") ? "http" : "https";
   return `${protocol}://${host}`;
 }
