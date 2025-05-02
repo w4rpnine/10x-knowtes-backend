@@ -40,15 +40,10 @@ COPY --from=build --chown=nodejs:nodejs /app/dist ./dist
 COPY --from=deps --chown=nodejs:nodejs /app/node_modules ./node_modules
 COPY --from=build --chown=nodejs:nodejs /app/package.json ./package.json
 
-# Set default HOST and PORT, allowing override via environment variables
+# Set default HOST, allowing override via environment variables
 ENV HOST=0.0.0.0
-ENV PORT=80
 
-EXPOSE ${PORT}
-
-# Healthcheck to verify the server is running
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost:${PORT}/ || exit 1
+EXPOSE 3000
 
 # Command to run the standalone server
 CMD ["node", "dist/server/entry.mjs"] 
