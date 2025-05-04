@@ -18,6 +18,21 @@ const commonHeaders = {
  */
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
+    console.log(`Request URL: ${request.url}`);
+
+    // Extract and log cookies
+    const cookieHeader = request.headers.get("Cookie");
+    console.log("Cookies:", cookieHeader);
+    const cookies = cookieHeader
+      ? Object.fromEntries(
+          cookieHeader.split(";").map((cookie) => {
+            const [name, value] = cookie.trim().split("=");
+            return [name, value];
+          })
+        )
+      : {};
+    console.log("Parsed cookies:", cookies);
+
     // if (!locals.session?.user) {
     //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
     //     status: 401,
