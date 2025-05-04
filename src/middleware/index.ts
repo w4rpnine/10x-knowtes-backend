@@ -45,6 +45,12 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     console.log(`Middleware Supabase: ${supabase}`);
 
     locals.supabase = supabase;
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    console.log(`Middleware User: ${user}`);
   }
 
   const result = await corsMiddleware(context, next);
