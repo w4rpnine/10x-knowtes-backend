@@ -12,7 +12,7 @@ const getFrontendOrigin = (): string => {
  * Common CORS headers used across all responses
  */
 const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": getFrontendOrigin(),
+  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Cookie",
   "Access-Control-Allow-Credentials": "true",
