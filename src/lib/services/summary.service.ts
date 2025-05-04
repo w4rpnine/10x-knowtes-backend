@@ -87,7 +87,7 @@ export class SummaryService {
    * @param userId User ID
    * @param topicId Topic ID
    * @param summaryId Summary stat ID
-   * @returns Object containing the summary_stat_id
+   * @returns Object containing the summary_stat_id and note_id
    * @throws APIError for various error conditions
    */
   async acceptSummary(
@@ -95,7 +95,7 @@ export class SummaryService {
     topicId: string,
     summaryId: string,
     summary: { title: string; content: string }
-  ): Promise<{ summary_stat_id: string }> {
+  ): Promise<{ summary_stat_id: string; note_id: string }> {
     // 1. Verify topic exists and belongs to user
     const { data: topic, error: topicError } = await this.supabase
       .from("topics")
@@ -184,7 +184,7 @@ export class SummaryService {
         throw new APIError(`Failed to update summary status: ${updateError.message}`, 500);
       }
 
-      return { summary_stat_id: summaryId };
+      return { summary_stat_id: summaryId, note_id: note.id };
     } catch (error) {
       // If it's already an APIError, rethrow it
       if (error instanceof APIError) {
