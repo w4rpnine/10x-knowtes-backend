@@ -4,12 +4,10 @@ import type { MiddlewareHandler } from "astro";
  * Common CORS headers used across all responses
  */
 const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Origin": "https://frontend.knowtes.app",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Cookie",
-  // Note: Cannot use wildcard "*" with credentials, so we're removing credentials support
-  // to allow all traffic. Re-enable with specific origins when needed for production.
-  // "Access-Control-Allow-Credentials": "true",
+  "Access-Control-Allow-Credentials": "true",
 };
 
 /**
