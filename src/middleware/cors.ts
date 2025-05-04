@@ -1,21 +1,15 @@
 import type { MiddlewareHandler } from "astro";
 
 /**
- * Get the frontend origin from environment variable or use default
- */
-// const getFrontendOrigin = (): string => {
-//   const port = process.env.FRONTEND_PORT || import.meta.env.FRONTEND_PORT || import.meta.env.PUBLIC_FRONTEND_PORT;
-//   return `http://localhost:${port}`;
-// };
-
-/**
  * Common CORS headers used across all responses
  */
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Cookie",
-  "Access-Control-Allow-Credentials": "true",
+  // Note: Cannot use wildcard "*" with credentials, so we're removing credentials support
+  // to allow all traffic. Re-enable with specific origins when needed for production.
+  // "Access-Control-Allow-Credentials": "true",
 };
 
 /**
