@@ -18,10 +18,26 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   // Initialize Supabase client if not a public path
   if (!PUBLIC_PATHS.includes(url.pathname)) {
-    console.log(`Middleware Request URL: ${request.body}`);
-    console.log(`Middleware Request Headers: ${request.headers}`);
-    console.log(`Middleware Request Cookies: ${cookies}`);
-    console.log(`Middleware Request Astro Cookies: ${cookies as AstroCookies}`);
+    console.log(`Middleware Request URL: ${url.pathname}`);
+
+    // Log headers in readable format
+    const headersObj: Record<string, string> = {};
+    request.headers.forEach((value, key) => {
+      headersObj[key] = value;
+    });
+    console.log("Middleware Request Headers:", JSON.stringify(headersObj, null, 2));
+
+    // Get cookie header and parse it manually
+    const cookieHeader = request.headers.get("Cookie") || "";
+    console.log("Middleware Cookie Header:", cookieHeader);
+
+    // Parse cookies from header for better logging
+    const parsedCookies = cookieHeader.split(";").map((cookie) => {
+      const [name, ...valueParts] = cookie.trim().split("=");
+      return { name, value: valueParts.join("=") };
+    });
+    console.log("Parsed cookies:", JSON.stringify(parsedCookies, null, 2));
+
     const supabase = createSupabaseServerInstance({
       cookies: cookies as AstroCookies,
       headers: request.headers,
