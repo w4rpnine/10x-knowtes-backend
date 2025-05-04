@@ -10,7 +10,7 @@ import node from "@astrojs/node";
 export default defineConfig({
   output: "server",
   integrations: [react(), sitemap()],
-  server: { port: 80 },
+  server: { port: 3001 },
   vite: {
     plugins: [tailwindcss()],
   },
