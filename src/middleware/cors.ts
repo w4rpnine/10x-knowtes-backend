@@ -3,10 +3,10 @@ import type { MiddlewareHandler } from "astro";
 /**
  * Get the frontend origin from environment variable or use default
  */
-const getFrontendOrigin = (): string => {
-  const port = process.env.FRONTEND_PORT || import.meta.env.FRONTEND_PORT || import.meta.env.PUBLIC_FRONTEND_PORT;
-  return `http://localhost:${port}`;
-};
+// const getFrontendOrigin = (): string => {
+//   const port = process.env.FRONTEND_PORT || import.meta.env.FRONTEND_PORT || import.meta.env.PUBLIC_FRONTEND_PORT;
+//   return `http://localhost:${port}`;
+// };
 
 /**
  * Common CORS headers used across all responses
