@@ -38,6 +38,9 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     });
     console.log("Parsed cookies:", JSON.stringify(parsedCookies, null, 2));
 
+    const decodedValue = Buffer.from(parsedCookies[0].value, "base64").toString("utf-8");
+    console.log(`Decoded cookie value: ${decodedValue}`);
+
     const supabase = createSupabaseServerInstance({
       cookies: cookies as AstroCookies,
       headers: request.headers,
