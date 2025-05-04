@@ -18,10 +18,15 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   // Initialize Supabase client if not a public path
   if (!PUBLIC_PATHS.includes(url.pathname)) {
+    console.log(`Middleware Request URL: ${request.body}`);
+    console.log(`Middleware Request Headers: ${request.headers}`);
+    console.log(`Middleware Request Cookies: ${cookies}`);
+    console.log(`Middleware Request Astro Cookies: ${cookies as AstroCookies}`);
     const supabase = createSupabaseServerInstance({
       cookies: cookies as AstroCookies,
       headers: request.headers,
     });
+    console.log(`Middleware Supabase: ${supabase}`);
 
     locals.supabase = supabase;
   }
