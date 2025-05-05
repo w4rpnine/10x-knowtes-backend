@@ -17,8 +17,6 @@ const commonHeaders = {
  */
 export const GET: APIRoute = async ({ request, locals }) => {
   try {
-    console.log(`User found mate: ${locals.session?.user}`);
-
     if (!locals.session?.user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,

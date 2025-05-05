@@ -1,8 +1,7 @@
 import type { APIRoute } from "astro";
 import { SummaryService } from "../../../../../../lib/services/summary.service";
-import { handleAPIError } from "../../../../../../lib/utils/error-handling";
+import { APIError, handleAPIError } from "../../../../../../lib/utils/error-handling";
 import { summaryRejectParamsSchema } from "../../../../../../lib/schemas/summary.schema";
-import { DEFAULT_USER_ID } from "../../../../../../db/supabase.client";
 export const prerender = false;
 
 /**
@@ -36,12 +35,11 @@ export const prerender = false;
  */
 export const PUT: APIRoute = async (context) => {
   try {
-    // if (!context.locals.session?.user) {
-    //   throw new APIError("Unauthorized", 401);
-    // }
+    if (!context.locals.session?.user) {
+      throw new APIError("Unauthorized", 401);
+    }
 
-    // const userId = context.locals.session.user.id;
-    const userId = DEFAULT_USER_ID;
+    const userId = context.locals.session.user.id;
 
     // Validate URL parameters
     const params = summaryRejectParamsSchema.parse({

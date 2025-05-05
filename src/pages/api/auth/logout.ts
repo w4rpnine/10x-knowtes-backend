@@ -3,6 +3,11 @@ import { createSupabaseServerInstance } from "../../../db/supabase.client";
 
 export const prerender = false;
 
+// Common headers for all responses
+const commonHeaders = {
+  "Content-Type": "application/json",
+};
+
 /**
  * Logout endpoint that handles user session termination
  *
@@ -22,28 +27,17 @@ export const prerender = false;
  *   "error": "Unauthorized"
  * }
  */
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async ({ locals }) => {
   try {
-    const supabase = createSupabaseServerInstance({
-      cookies,
-      headers: request.headers,
-    });
-
-    // Check if user is authenticated first
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
+    if (!locals.session?.user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
-        headers: { "Content-Type": "application/json" },
+        headers: commonHeaders,
       });
     }
 
     // Perform logout
-    const { error } = await supabase.auth.signOut();
+    const { error } = await locals.supabase.auth.signOut();
 
     if (error) {
       return new Response(JSON.stringify({ error: "Server error during logout" }), {
