@@ -4,7 +4,7 @@ import type { MiddlewareHandler } from "astro";
  * Common CORS headers used across all responses
  */
 const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "https://frontend.knowtes.app",
+  "Access-Control-Allow-Origin": "https://knowtes.app",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, Cookie",
   "Access-Control-Allow-Credentials": "true",
