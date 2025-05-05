@@ -18,42 +18,44 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   // Initialize Supabase client if not a public path
   if (!PUBLIC_PATHS.includes(url.pathname)) {
-    console.log(`Middleware Request URL: ${url.pathname}`);
-
-    // Log headers in readable format
-    const headersObj: Record<string, string> = {};
-    request.headers.forEach((value, key) => {
-      headersObj[key] = value;
-    });
-    console.log("Middleware Request Headers:", JSON.stringify(headersObj, null, 2));
-
-    // Get cookie header and parse it manually
+    // Check for and decode the sb-auth cookie if present
     const cookieHeader = request.headers.get("Cookie") || "";
-    console.log("Middleware Cookie Header:", cookieHeader);
+    const sbAuthMatch = cookieHeader.match(/sb-auth=base64-([^;]+)/);
 
-    // Parse cookies from header for better logging
-    const parsedCookies = cookieHeader.split(";").map((cookie) => {
-      const [name, ...valueParts] = cookie.trim().split("=");
-      return { name, value: valueParts.join("=") };
-    });
-    console.log("Parsed cookies:", JSON.stringify(parsedCookies, null, 2));
+    if (sbAuthMatch && sbAuthMatch[1]) {
+      console.log("Found sb-auth cookie", sbAuthMatch[1]);
+      try {
+        const base64Value = sbAuthMatch[1];
+        const decodedValue = atob(base64Value);
 
-    const decodedValue = Buffer.from(parsedCookies[0].value, "base64").toString("utf-8");
-    console.log(`Decoded cookie value: ${decodedValue}`);
+        // Replace the encoded cookie with the decoded value
+        const newCookieHeader = cookieHeader.replace(/sb-auth=base64-[^;]+/, `sb-auth=${decodedValue}`);
+
+        // Create a new headers object with the updated cookie
+        const newHeaders = new Headers(request.headers);
+        newHeaders.set("Cookie", newCookieHeader);
+
+        // Update the request headers
+        Object.defineProperty(request, "headers", {
+          value: newHeaders,
+          writable: true,
+        });
+      } catch (error) {
+        console.error("Failed to decode sb-auth cookie:", error);
+      }
+    }
 
     const supabase = createSupabaseServerInstance({
       cookies: cookies as AstroCookies,
       headers: request.headers,
     });
-    console.log(`Middleware Supabase: ${supabase}`);
 
     locals.supabase = supabase;
 
     const {
       data: { user },
     } = await supabase.auth.getUser();
-
-    console.log(`Middleware User: ${user}`);
+    console.log("Found user", user);
   }
 
   const result = await corsMiddleware(context, next);
