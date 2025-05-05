@@ -20,15 +20,15 @@ export const GET: APIRoute = async ({ request, locals }) => {
   try {
     console.log(`User found mate: ${locals.session?.user}`);
 
-    // if (!locals.session?.user) {
-    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
-    //     status: 401,
-    //     headers: commonHeaders,
-    //   });
-    // }
+    if (!locals.session?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: commonHeaders,
+      });
+    }
 
-    // const userId = locals.session.user.id;
-    const userId = DEFAULT_USER_ID;
+    const userId = locals.session.user.id;
+    // const userId = DEFAULT_USER_ID;
 
     // Parse query parameters
     const url = new URL(request.url);

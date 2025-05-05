@@ -23,7 +23,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     const sbAuthMatch = cookieHeader.match(/sb-auth=base64-([^;]+)/);
 
     if (sbAuthMatch && sbAuthMatch[1]) {
-      console.log("Found sb-auth cookie", sbAuthMatch[1]);
       try {
         const base64Value = sbAuthMatch[1];
         const decodedValue = atob(base64Value);
@@ -51,11 +50,6 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
     });
 
     locals.supabase = supabase;
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    console.log("Found user", user);
   }
 
   const result = await corsMiddleware(context, next);
