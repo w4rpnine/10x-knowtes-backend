@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { NotesService } from "../../../lib/services/notes.service";
 import { fromZodError } from "zod-validation-error";
-import { DEFAULT_USER_ID, supabaseClient } from "../../../db/supabase.client";
+import { supabaseClient } from "../../../db/supabase.client";
 import { z } from "zod";
 import { updateNoteSchema } from "../../../lib/schemas/note.schema";
 export const prerender = false;
@@ -24,15 +24,14 @@ const uuidSchema = z.string().uuid("Invalid UUID format");
  */
 export const GET: APIRoute = async ({ params, locals }) => {
   try {
-    // if (!locals.session?.user) {
-    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
-    //     status: 401,
-    //     headers: commonHeaders,
-    //   });
-    // }
+    if (!locals.session?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: commonHeaders,
+      });
+    }
 
-    // const userId = locals.session?.user?.id || DEFAULT_USER_ID;
-    const userId = DEFAULT_USER_ID;
+    const userId = locals.session.user.id;
     const supabase = locals.supabase || supabaseClient;
 
     // Validate note ID
@@ -93,15 +92,14 @@ export const GET: APIRoute = async ({ params, locals }) => {
  */
 export const PUT: APIRoute = async ({ params, request, locals }) => {
   try {
-    // if (!locals.session?.user) {
-    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
-    //     status: 401,
-    //     headers: commonHeaders,
-    //   });
-    // }
+    if (!locals.session?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: commonHeaders,
+      });
+    }
 
-    // const userId = locals.session?.user?.id || DEFAULT_USER_ID;
-    const userId = DEFAULT_USER_ID;
+    const userId = locals.session.user.id;
     const supabase = locals.supabase || supabaseClient;
 
     // Validate note ID
@@ -172,15 +170,14 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
  */
 export const DELETE: APIRoute = async ({ params, locals }) => {
   try {
-    // if (!locals.session?.user) {
-    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
-    //     status: 401,
-    //     headers: commonHeaders,
-    //   });
-    // }
+    if (!locals.session?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: commonHeaders,
+      });
+    }
 
-    // const userId = locals.session?.user?.id || DEFAULT_USER_ID;
-    const userId = DEFAULT_USER_ID;
+    const userId = locals.session.user.id;
     const supabase = locals.supabase || supabaseClient;
 
     // Validate note ID

@@ -52,12 +52,11 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
     locals.supabase = supabase;
 
-    const { data } = await supabase.auth.getSession();
-    if (data?.session) {
+    const { data } = await supabase.auth.getUser();
+    if (data?.user) {
       session = {
         user: {
-          id: data.session.user.id,
-          email: data.session.user.email,
+          id: data.user.id,
         },
       };
       context.locals.session = session;

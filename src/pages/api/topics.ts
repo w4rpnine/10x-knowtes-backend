@@ -3,7 +3,6 @@ import { getTopics, createTopic } from "../../lib/services/topics.service";
 import { supabaseClient } from "../../db/supabase.client";
 import { createTopicSchema } from "../../lib/schemas/topic.schema";
 import { fromZodError } from "zod-validation-error";
-import { DEFAULT_USER_ID } from "../../db/supabase.client";
 export const prerender = false;
 
 // Common headers for all responses
@@ -28,7 +27,6 @@ export const GET: APIRoute = async ({ request, locals }) => {
     }
 
     const userId = locals.session.user.id;
-    // const userId = DEFAULT_USER_ID;
 
     // Parse query parameters
     const url = new URL(request.url);
@@ -60,15 +58,14 @@ export const GET: APIRoute = async ({ request, locals }) => {
  */
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // if (!locals.session?.user) {
-    //   return new Response(JSON.stringify({ error: "Unauthorized" }), {
-    //     status: 401,
-    //     headers: commonHeaders,
-    //   });
-    // }
+    if (!locals.session?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: commonHeaders,
+      });
+    }
 
-    // const userId = locals.session.user.id;
-    const userId = DEFAULT_USER_ID;
+    const userId = locals.session.user.id;
 
     // Parse and validate request body
     const body = await request.json();

@@ -215,8 +215,6 @@ Endpoint służy do tworzenia nowych notatek w ramach wybranego tematu. Pozwala 
          { status: 201, headers: { 'Content-Type': 'application/json' } }
        );
      } catch (error) {
-       console.error('Error creating note:', error);
-       
        return new Response(
          JSON.stringify({ error: 'Internal server error' }),
          { status: 500, headers: { 'Content-Type': 'application/json' } }

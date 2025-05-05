@@ -17,10 +17,8 @@ const CORS_HEADERS = {
 export const corsMiddleware: MiddlewareHandler = async (context, next) => {
   const { request } = context;
 
-  console.log("CORS middleware");
   // Immediately handle preflight OPTIONS requests
   if (request.method === "OPTIONS") {
-    console.log("OPTIONS request case");
     return new Response(null, {
       status: 204,
       headers: {
@@ -35,7 +33,6 @@ export const corsMiddleware: MiddlewareHandler = async (context, next) => {
 
   // If next() didn't return a Response, create one
   if (!(response instanceof Response)) {
-    console.log("Non-OPTIONS no response request case");
     return new Response(null, {
       status: 200,
       headers: CORS_HEADERS,
@@ -48,7 +45,6 @@ export const corsMiddleware: MiddlewareHandler = async (context, next) => {
     newHeaders.set(key, value);
   });
 
-  console.log("Non-OPTIONS with response request case");
   // Create a new response with the same status, body but with updated headers
   return new Response(response.body, {
     status: response.status,
