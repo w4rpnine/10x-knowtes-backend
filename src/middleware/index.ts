@@ -48,8 +48,20 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
       cookies: cookies as AstroCookies,
       headers: request.headers,
     });
+    let session = null;
 
     locals.supabase = supabase;
+
+    const { data } = await supabase.auth.getSession();
+    if (data?.session) {
+      session = {
+        user: {
+          id: data.session.user.id,
+          email: data.session.user.email,
+        },
+      };
+      context.locals.session = session;
+    }
   }
 
   const result = await corsMiddleware(context, next);
